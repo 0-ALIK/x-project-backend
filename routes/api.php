@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ReclamoController as Reclamo; 
+use App\Http\Controllers\ReclamoController as Reclamo;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,11 +15,12 @@ use App\Http\Controllers\ReclamoController as Reclamo;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+###########################################
+########    RUTAS DE RECLAMOS    ##########
+###########################################
 
 Route::post('/api/reclamo', [Reclamo::class, 'guardarReclamo']);
+Route::get('/api/reclamo', [Reclamo::class, 'getAllReclamos']);
    
 
 

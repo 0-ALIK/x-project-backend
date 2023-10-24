@@ -20,6 +20,6 @@ class Reclamo extends Model
     ];
 
     protected $attributes = [
-        'estado' => 'espera',
+        'estado_id' => 1,
     ];
 }

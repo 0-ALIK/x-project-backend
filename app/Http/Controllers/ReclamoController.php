@@ -24,7 +24,6 @@ class ReclamoController extends Controller
         //
     }
 
-    
     public function guardarReclamo(Request $request)
     {
         //Empieza con prioridad baja
@@ -35,7 +34,7 @@ class ReclamoController extends Controller
                 $prio = 2;
         }
         // Hacemos el insert a la base de datos con los datos que nos llegaron del reclamo
-        try{
+        try {
             Reclamo::create(
                 [
                     'cliente_id'    => $request['cliente_id'],
@@ -51,6 +50,17 @@ class ReclamoController extends Controller
             return "No se pudo registrar el reclamo";
         }
         return "Reclamo registrado";
+    }
+
+    public function getAllReclamos(){
+        try {
+            $reclamos = Reclamo::all();
+            return response()->json($reclamos);
+
+        } catch(Exception $e){
+            print($e);
+            return response()->json(["ERROR" => "Ocurrió un problema al buscar los reclamos"]);
+        }
     }
 
     /**

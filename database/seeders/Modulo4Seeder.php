@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Categoria;
 use App\Models\Prioridad;
 use App\Models\Reclamo;
+use App\Models\Estado;
 
 
 class Modulo4Seeder extends Seeder
@@ -14,23 +15,29 @@ class Modulo4Seeder extends Seeder
     /**
      * Seed the application's database.
      */
-    public function run(): void
-    {
+    public function run(): void {
         # PRIORIDADES POR DEFECTO
         $dataPrioridades = array('baja', 'media', 'urgente');
-
+        # ESTADOS POR DEFECTO
+        $dataEstados = array('espera', 'revisado', 'resuelto');
         # CATEGORÍAS POR DEFECTO
         $dataCategorias = array('retraso', 'equivocado', 'dañado', 'devolución', 'otro');
         
-        foreach($dataPrioridades as $data){
+        foreach($dataPrioridades as $data) {
             Prioridad::create(
                 ['prioridad' => $data]
             );
         }
 
-        foreach($dataCategorias as $data){
+        foreach($dataCategorias as $data) {
             Categoria::create(
                 ['categoria' => $data]
+            );
+        }
+
+        foreach($dataEstados as $data) {
+            Estado::create(
+                ['estado' => $data]
             );
         }
 
