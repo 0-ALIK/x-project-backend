@@ -34,11 +34,12 @@ class Modulo4Seeder extends Seeder
             );
         }
 
+        # EJEMPLO DE RECLAMO
         Reclamo::create(
             [
                 'cliente_id'    => 1,
                 'pedido_id'     => 1,
-                'categoria'     => 1,
+                'categoria_id'  => 1,
                 'descripcion'   => 'Pedí el paquete ayer y todavía no me llega',
                 'evidencia'     => '',
                 'prioridad_id'  => 1

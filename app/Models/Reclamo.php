@@ -13,7 +13,7 @@ class Reclamo extends Model
     protected $fillable = [
         'cliente_id',
         'pedido_id',
-        'categoria',
+        'categoria_id',
         'descripcion',
         'evidencia',
         'prioridad_id'

@@ -40,13 +40,14 @@ class ReclamoController extends Controller
                 [
                     'cliente_id'    => $request['cliente_id'],
                     'pedido_id'     => $request['pedido_id'],
-                    'categoria'     => $request['categoria'],
+                    'categoria_id'  => $request['categoria'],
                     'descripcion'   => $request['descripcion'],
                     'evidencia'     => $request['evidencia'],
                     'prioridad_id'  => $prio
                 ]
             );
         } catch (Exception $e) {
+            print($e);
             return "No se pudo registrar el reclamo";
         }
         return "Reclamo registrado";
