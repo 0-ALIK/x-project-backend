@@ -17,7 +17,7 @@ class Modulo4Seeder extends Seeder
      */
     public function run(): void {
         # PRIORIDADES POR DEFECTO
-        $dataPrioridades = array('baja', 'media', 'urgente');
+        $dataPrioridades = array('baja', 'media', 'alta');
         # ESTADOS POR DEFECTO
         $dataEstados = array('espera', 'revisado', 'resuelto');
         # CATEGORÍAS POR DEFECTO

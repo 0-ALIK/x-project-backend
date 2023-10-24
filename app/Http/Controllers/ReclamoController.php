@@ -28,10 +28,14 @@ class ReclamoController extends Controller
     {
         //Empieza con prioridad baja
         $prio = 1;
-        // Dependiendo de la categoria cambia la prioridad
+        // Dependiendo de la categoria cambia la prioridad (Sujeto a cambio)
         switch($request['categoria']){
-            case 'retraso':
+            case 1:
                 $prio = 2;
+            case 2:
+                $prio = 3;
+            case 3:
+                $prio = 3;
         }
         // Hacemos el insert a la base de datos con los datos que nos llegaron del reclamo
         try {
@@ -47,9 +51,9 @@ class ReclamoController extends Controller
             );
         } catch (Exception $e) {
             print($e);
-            return "No se pudo registrar el reclamo";
+            return response()->json( ["mensaje" => "Ocurrió un error", "status" => 500] );
         }
-        return "Reclamo registrado";
+        return response()->json( ["mensaje" => "Reclamo registrado", "status" => 200] );
     }
 
     public function getAllReclamos(){
@@ -59,7 +63,7 @@ class ReclamoController extends Controller
 
         } catch(Exception $e){
             print($e);
-            return response()->json(["ERROR" => "Ocurrió un problema al buscar los reclamos"]);
+            return response()->json( ["mensaje" => "Ocurrió un problema al buscar los reclamos", "status" => 404] );
         }
     }
 
