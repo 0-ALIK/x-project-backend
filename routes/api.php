@@ -2,7 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ReclamoController as Reclamo; 
+use App\Http\Controllers\ReclamoController as Reclamo;
+use App\Http\Controllers\SugerenciaController as Sugerencia; 
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +21,7 @@ use App\Http\Controllers\ReclamoController as Reclamo;
 // });
 
 Route::post('/api/reclamo', [Reclamo::class, 'guardarReclamo']);
-   
+
+Route::post('/api/sugerencia', [Sugerencia::class, 'guardarSugerencia']);
 
 
