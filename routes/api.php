@@ -20,6 +20,9 @@ use App\Http\Controllers\ReclamoController as Reclamo;
 // });
 
 Route::post('/api/reclamo', [Reclamo::class, 'guardarReclamo']);
-   
 
+Route::patch('/api/reclamo/{reclamo_id}/prioridad', [Reclamo::class, 'updatePrioridad']);
+Route::patch('/api/reclamo/{reclamo_id}/estado', [Reclamo::class, 'updateEstado']);
 
+Route::get('/api/reclamo/cliente/{cliente_id}', [Reclamo::class, 'getReclamosCliente']);
+Route::get('/api/reclamo/{reclamo_id}', [Reclamo::class, 'getReclamoById']);
