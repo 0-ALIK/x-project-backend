@@ -47,11 +47,8 @@ class ReclamoController extends Controller
                 ]
             );
         } catch (Exception $e) {
-            print($e);
             return "No se pudo registrar el reclamo";
         }
-        
-
         return "Reclamo registrado";
     }
 
