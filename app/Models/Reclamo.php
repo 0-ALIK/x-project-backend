@@ -8,18 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Reclamo extends Model
 {
     use HasFactory;
-    protected $table = "reclamo";
+    protected $table = 'reclamo';
 
     protected $fillable = [
         'cliente_id',
         'pedido_id',
-        'categoria',
+        'categoria_id',
         'descripcion',
         'evidencia',
         'prioridad_id'
     ];
 
     protected $attributes = [
-        'estado' => 'espera',
+        'estado_id' => 1,
     ];
 }
