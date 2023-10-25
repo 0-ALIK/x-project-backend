@@ -9,15 +9,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('sugerencia', function (Blueprint $table) {
-            $table->id('id_sugerencia');        //PK
-            $table->integer('cliente_id');      //FK
+            $table->id('id_sugerencia');                    //PK
+            $table->unsignedBigInteger('cliente_id');       //FK
             $table->string('contenido');  
             $table->timestamp('fecha');  
             $table->integer('valoracion');  
             $table->timestamps();
 
             //Foreign Key constraints
-            //$table->foreign('cliente_id')->references('id')->on('clientes');
+            $table->foreign('cliente_id')->references('id_cliente')->on('cliente');
         });
     }
 
