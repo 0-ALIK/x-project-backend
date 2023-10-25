@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Prioridad extends Model
 {
     use HasFactory;
-    protected $table = 'prioridad';
+    protected $table = 'reclamo_prioridad';
+    protected $primaryKey = 'id_prioridad';
+
     protected $fillable = ['prioridad'];
 
 }

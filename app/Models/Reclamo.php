@@ -9,7 +9,7 @@ class Reclamo extends Model
 {
     use HasFactory;
     protected $table = 'reclamo';
-
+    protected $primaryKey = 'id_reclamo';
     protected $fillable = [
         'cliente_id',
         'pedido_id',

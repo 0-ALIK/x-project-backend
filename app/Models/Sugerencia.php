@@ -11,10 +11,13 @@ class Sugerencia extends Model
 {
     use HasFactory;
     protected $table = "sugerencia";
+    protected $primaryKey = 'id_sugerencia';
+
 
     protected $fillable = [
         'contenido',
         'cliente_id',
+        'fecha',
         'valoracion'
     ];
 

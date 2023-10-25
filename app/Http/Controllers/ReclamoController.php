@@ -60,14 +60,6 @@ class ReclamoController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Reclamo $reclamo)
-    {
-        //
-    }
-
     // Retorna los reclamos de un cliente en especifico
     public function getReclamosCliente($cliente_id) {
         $reclamos = Reclamo::where('cliente_id', $cliente_id)->get();
@@ -81,29 +73,13 @@ class ReclamoController extends Controller
 
     // Retorna un reclamo en especifico
     public function getReclamoById($reclamo_id) {
-        $reclamo = Reclamo::where('id', $reclamo_id)->first();
+        $reclamo = Reclamo::find($reclamo_id);
 
         if (!$reclamo) {
             return response()->json(["mensaje" => "Reclamo no existe", "status" => 400]);
         }
 
         return response()->json(["data" => $reclamo, "status" => 200]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Reclamo $reclamo)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Reclamo $reclamo)
-    {
-        //
     }
 
     // Actualiza la prioridad del reclamo
@@ -138,22 +114,23 @@ class ReclamoController extends Controller
     // Actualiza el estado del reclamo
     public function updateEstado(Request $request, $reclamo_id) {
         $reclamo = Reclamo::find($reclamo_id);
+        
         $estado_id = $request->input('estado_id');
-
+       
         if (!$estado_id || ($estado_id < 1 && $estado_id > 3)) {
             return response()->json(["mensaje" => "Parametro ESTADO incorrecto", "status" => 400]);
         }
-
+        
         if (!$reclamo) {
             return response()->json(["mensaje" => "Reclamo no encontrado", "status" => 400]);
         }
-
+        
         if ($reclamo->estado_id == 3) {
             return response()->json(["mensaje" => "Reclamo ya ha sido resuelto", "status" => 400]);
         }
-
+        
         $reclamo->estado_id = $estado_id;
-
+      
         try {
             $reclamo->save();
         } catch (Exception $e) {
@@ -163,13 +140,6 @@ class ReclamoController extends Controller
         return response()->json(["data" => $reclamo, "status" => 200]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Reclamo $reclamo)
-    {
-        //
-    }
     public function getAllCategorias() {
         try {
             $categorias = Categoria::all();

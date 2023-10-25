@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('prioridad', function (Blueprint $table) {
-            $table->id();
+        Schema::create('reclamo_prioridad', function (Blueprint $table) {
+            $table->id('id_r_prioridad');
             $table->string('prioridad')->unique();
             $table->timestamps();
         });
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('prioridad');
+        Schema::dropIfExists('reclamo_prioridad');
     }
 };

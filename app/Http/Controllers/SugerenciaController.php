@@ -4,25 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Sugerencia;
+use Illuminate\Support\Carbon;
+
 use Exception;
+
 class SugerenciaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
     public function guardarSugerencia(Request $request)
     {
         try{
@@ -30,14 +17,15 @@ class SugerenciaController extends Controller
                 [
                     'cliente_id'    => $request['cliente_id'],
                     'contenido'     => $request['contenido'],
-                    'valoracion'    => $request['valoracion']
+                    'valoracion'    => $request['valoracion'],
+                    'fecha'         => Carbon::now()
                 ]
             );
         } catch (Exception $e) {
             print($e);
-            return "No se pudo realizar la sugerencia";
+            return response()->json(["mensaje" => "No se pudo registrar la sugerencia", "status" => 400]);
         }
-        return "Sugerencia registrada";
+        return response()->json(["mensaje" => "Sugerencia registrada", "status" => 200]);
     }
 
     //Aqui se obtienen las sugerencias guardadas
@@ -48,37 +36,5 @@ class SugerenciaController extends Controller
         } catch (Exception $e) {
             return "No se pudo obtener las sugerencias";
         }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Sugerencia $sugerencia)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Sugerencia $sugerencia)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Sugerencia $sugerencia)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Sugerencia $sugerencia)
-    {
-        //
     }
 }

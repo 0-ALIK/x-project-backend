@@ -10,12 +10,12 @@ use App\Models\Reclamo;
 use App\Models\Estado;
 use App\Models\Sugerencia;
 
+use Illuminate\Support\Carbon;
+
+
 
 class Modulo4Seeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void {
         # PRIORIDADES POR DEFECTO
         $dataPrioridades = array('baja', 'media', 'alta');
@@ -59,7 +59,8 @@ class Modulo4Seeder extends Seeder
             [
                 'cliente_id'    => 1,
                 'contenido'     => 'Me gustaría que agregaran más opciones de pago',
-                'valoracion'    => 4
+                'valoracion'    => 4,
+                'fecha' => Carbon::now()
             ]
         );
     }
