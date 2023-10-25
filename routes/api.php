@@ -25,6 +25,9 @@ Route::get('/api/reclamo', [Reclamo::class, 'getAllReclamos']);
 Route::get('/api/reclamo/categorias', [Reclamo::class, 'getAllCategorias']);
 Route::get('/api/reclamo/estados', [Reclamo::class, 'getAllEstados']);
 Route::get('/api/reclamo/prioridades', [Reclamo::class, 'getAllPrioridades']);
-   
 
+Route::patch('/api/reclamo/{reclamo_id}/prioridad', [Reclamo::class, 'updatePrioridad']);
+Route::patch('/api/reclamo/{reclamo_id}/estado', [Reclamo::class, 'updateEstado']);
 
+Route::get('/api/reclamo/cliente/{cliente_id}', [Reclamo::class, 'getReclamosCliente']);
+Route::get('/api/reclamo/{reclamo_id}', [Reclamo::class, 'getReclamoById']);

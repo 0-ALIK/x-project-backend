@@ -60,6 +60,116 @@ class ReclamoController extends Controller
         }
     }
 
+    /**
+     * Display the specified resource.
+     */
+    public function show(Reclamo $reclamo)
+    {
+        //
+    }
+
+    // Retorna los reclamos de un cliente en especifico
+    public function getReclamosCliente($cliente_id) {
+        $reclamos = Reclamo::where('cliente_id', $cliente_id)->get();
+
+        if (!$reclamos) {
+            return response()->json(["mensaje" => "Cliente no existe", "status" => 400]);
+        }
+
+        return response()->json(["data" => $reclamos, "status" => 200]);
+    }
+
+    // Retorna un reclamo en especifico
+    public function getReclamoById($reclamo_id) {
+        $reclamo = Reclamo::where('id', $reclamo_id)->first();
+
+        if (!$reclamo) {
+            return response()->json(["mensaje" => "Reclamo no existe", "status" => 400]);
+        }
+
+        return response()->json(["data" => $reclamo, "status" => 200]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Reclamo $reclamo)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Reclamo $reclamo)
+    {
+        //
+    }
+
+    // Actualiza la prioridad del reclamo
+    public function updatePrioridad(Request $request, $reclamo_id) {
+        $reclamo = Reclamo::find($reclamo_id);
+        $prioridad_id = $request->input('prioridad_id');
+
+        if (!$prioridad_id || ($prioridad_id < 1 && $prioridad_id > 3)) {
+            print($prioridad_id);
+            return response()->json(["mensaje" => "Parametro PRIORIDAD incorrecto", "status" => 400]);
+        }
+
+        if (!$reclamo) {
+            return response()->json(["mensaje" => "Reclamo no encontrado", "status" => 400]);
+        }
+
+        if ($reclamo->estado == 3) {
+            return response()->json(["mensaje" => "Reclamo ha sido resuelto", "status" => 400]);;
+        }
+
+        $reclamo->prioridad_id = $prioridad_id;
+
+        try {
+            $reclamo->save();
+        } catch (Exception $e) {
+            return response()->json(["mensaje" => "No se pudo actualizar la prioridad", "status" => 500]);
+        }
+
+        return response()->json(["data" => $reclamo, "status" => 200]);
+    }
+
+    // Actualiza el estado del reclamo
+    public function updateEstado(Request $request, $reclamo_id) {
+        $reclamo = Reclamo::find($reclamo_id);
+        $estado_id = $request->input('estado_id');
+
+        if (!$estado_id || ($estado_id < 1 && $estado_id > 3)) {
+            return response()->json(["mensaje" => "Parametro ESTADO incorrecto", "status" => 400]);
+        }
+
+        if (!$reclamo) {
+            return response()->json(["mensaje" => "Reclamo no encontrado", "status" => 400]);
+        }
+
+        if ($reclamo->estado_id == 3) {
+            return response()->json(["mensaje" => "Reclamo ya ha sido resuelto", "status" => 400]);
+        }
+
+        $reclamo->estado_id = $estado_id;
+
+        try {
+            $reclamo->save();
+        } catch (Exception $e) {
+            return response()->json(["mensaje" => "No se pudo actualizar el estado", "status" => 500]);
+        }
+
+        return response()->json(["data" => $reclamo, "status" => 200]);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Reclamo $reclamo)
+    {
+        //
+    }
     public function getAllCategorias() {
         try {
             $categorias = Categoria::all();
