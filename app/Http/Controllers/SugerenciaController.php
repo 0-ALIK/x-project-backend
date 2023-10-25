@@ -12,7 +12,13 @@ class SugerenciaController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $sugerencias = Sugerencia::get();
+            // Aqui se ebtienen las sugerencias
+            return $sugerencias;
+        } catch (Exception $e) {
+            return "No se pudo obtener las sugerencias";
+        }
     }
 
     /**

@@ -23,5 +23,6 @@ use App\Http\Controllers\SugerenciaController as Sugerencia;
 Route::post('/api/reclamo', [Reclamo::class, 'guardarReclamo']);
 
 Route::post('/api/sugerencia', [Sugerencia::class, 'guardarSugerencia']);
+Route::get('/api/sugerencia', [Sugerencia::class, 'index']);
 
 
