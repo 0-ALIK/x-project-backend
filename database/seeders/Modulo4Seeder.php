@@ -8,6 +8,7 @@ use App\Models\Categoria;
 use App\Models\Prioridad;
 use App\Models\Reclamo;
 use App\Models\Estado;
+use App\Models\Sugerencia;
 
 
 class Modulo4Seeder extends Seeder
@@ -50,6 +51,15 @@ class Modulo4Seeder extends Seeder
                 'descripcion'   => 'Pedí el paquete ayer y todavía no me llega',
                 'evidencia'     => '',
                 'prioridad_id'  => 1
+            ]
+        );
+
+        # EJEMPLO DE SUGERENCIA
+        Sugerencia::create(
+            [
+                'cliente_id'    => 1,
+                'contenido'     => 'Me gustaría que agregaran más opciones de pago',
+                'valoracion'    => 4
             ]
         );
     }
