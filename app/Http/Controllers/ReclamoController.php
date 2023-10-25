@@ -24,8 +24,7 @@ class ReclamoController extends Controller
         //
     }
 
-    public function guardarReclamo(Request $request)
-    {
+    public function guardarReclamo(Request $request) {
         //Empieza con prioridad baja
         $prio = 1;
         // Dependiendo de la categoria cambia la prioridad (Sujeto a cambio)
@@ -56,7 +55,7 @@ class ReclamoController extends Controller
         return response()->json( ["mensaje" => "Reclamo registrado", "status" => 200] );
     }
 
-    public function getAllReclamos(){
+    public function getAllReclamos() {
         try {
             $reclamos = Reclamo::all();
             return response()->json($reclamos);
@@ -76,27 +75,25 @@ class ReclamoController extends Controller
     }
 
     // Retorna los reclamos de un cliente en especifico
-    public function getReclamosCliente($cliente_id)
-    {
+    public function getReclamosCliente($cliente_id) {
         $reclamos = Reclamo::where('cliente_id', $cliente_id)->get();
 
         if (!$reclamos) {
-            return response()->json(['error' => "Cliente no existe"]);
+            return response()->json(["mensaje" => "Cliente no existe", "status" => 400]);
         }
 
-        return response()->json($reclamos);
+        return response()->json(["data" => $reclamos, "status" => 200]);
     }
 
     // Retorna un reclamo en especifico
-    public function getReclamoById($reclamo_id)
-    {
+    public function getReclamoById($reclamo_id) {
         $reclamo = Reclamo::where('id', $reclamo_id)->first();
 
         if (!$reclamo) {
-            return response()->json(['error' => "Reclamo no existe"]);
+            return response()->json(["mensaje" => "Reclamo no existe", "status" => 400]);
         }
 
-        return response()->json($reclamo);
+        return response()->json(["data" => $reclamo, "status" => 200]);
     }
 
     /**
@@ -116,22 +113,21 @@ class ReclamoController extends Controller
     }
 
     // Actualiza la prioridad del reclamo
-    public function updatePrioridad(Request $request, $reclamo_id)
-    {
+    public function updatePrioridad(Request $request, $reclamo_id) {
         $reclamo = Reclamo::find($reclamo_id);
         $prioridad_id = $request->input('prioridad_id');
 
         if (!$prioridad_id || ($prioridad_id < 1 && $prioridad_id > 3)) {
             print($prioridad_id);
-            return response()->json(['error' => "Parametro PRIORIDAD incorrecto"]);
+            return response()->json(["mensaje" => "Parametro PRIORIDAD incorrecto", "status" => 400]);
         }
 
         if (!$reclamo) {
-            return response()->json(['error' => "Reclamo no encontrado"]);
+            return response()->json(["mensaje" => "Reclamo no encontrado", "status" => 400]);
         }
 
-        if ($reclamo->estado == "resuelto") {
-            return response()->json(['error' => "Reclamo ha sido resuelto"]);;
+        if ($reclamo->estado == 3) {
+            return response()->json(["mensaje" => "Reclamo ha sido resuelto", "status" => 400]);;
         }
 
         $reclamo->prioridad_id = $prioridad_id;
@@ -139,39 +135,38 @@ class ReclamoController extends Controller
         try {
             $reclamo->save();
         } catch (Exception $e) {
-            return response()->json(['error' => "No se pudo actualizar la prioridad"]);
+            return response()->json(["mensaje" => "No se pudo actualizar la prioridad", "status" => 500]);
         }
 
-        return response()->json($reclamo);
+        return response()->json(["data" => $reclamo, "status" => 200]);
     }
 
     // Actualiza el estado del reclamo
-    public function updateEstado(Request $request, $reclamo_id)
-    {
+    public function updateEstado(Request $request, $reclamo_id) {
         $reclamo = Reclamo::find($reclamo_id);
-        $estado = $request->input('estado');
+        $estado_id = $request->input('estado_id');
 
-        if (!$estado || !in_array($estado, ["espera", "revisado", "resuelto"])) {
-            return response()->json(['error' => "Parametro ESTADO incorrecto"]);
+        if (!$estado_id || ($estado_id < 1 && $estado_id > 3)) {
+            return response()->json(["mensaje" => "Parametro ESTADO incorrecto", "status" => 400]);
         }
 
         if (!$reclamo) {
-            return response()->json(['error' => "Reclamo no encontrado"]);
+            return response()->json(["mensaje" => "Reclamo no encontrado", "status" => 400]);
         }
 
-        if ($reclamo->estado == "resuelto") {
-            return response()->json(['error' => "Reclamo ya ha sido resuelto"]);
+        if ($reclamo->estado_id == 3) {
+            return response()->json(["mensaje" => "Reclamo ya ha sido resuelto", "status" => 400]);
         }
 
-        $reclamo->estado = $estado;
+        $reclamo->estado_id = $estado_id;
 
         try {
             $reclamo->save();
         } catch (Exception $e) {
-            return response()->json(['error' => "No se pudo actualizar el estado"]);
+            return response()->json(["mensaje" => "No se pudo actualizar el estado", "status" => 500]);
         }
 
-        return response()->json($reclamo);
+        return response()->json(["data" => $reclamo, "status" => 200]);
     }
 
     /**
