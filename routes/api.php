@@ -20,7 +20,11 @@ use App\Http\Controllers\ReclamoController as Reclamo;
 ###########################################
 
 Route::post('/api/reclamo', [Reclamo::class, 'guardarReclamo']);
+
 Route::get('/api/reclamo', [Reclamo::class, 'getAllReclamos']);
+Route::get('/api/reclamo/categorias', [Reclamo::class, 'getAllCategorias']);
+Route::get('/api/reclamo/estados', [Reclamo::class, 'getAllEstados']);
+Route::get('/api/reclamo/prioridades', [Reclamo::class, 'getAllPrioridades']);
    
 
 
