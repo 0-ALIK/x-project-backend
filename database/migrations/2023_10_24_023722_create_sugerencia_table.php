@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('contenido');  
             $table->timestamp('fecha');  
             $table->integer('valoracion');  
-            
             $table->timestamps();
 
             //Foreign Key constraints

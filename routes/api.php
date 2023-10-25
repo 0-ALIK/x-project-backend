@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReclamoController as Reclamo;
+use App\Http\Controllers\SugerenciaController as Sugerencia;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,3 +32,6 @@ Route::patch('/api/reclamo/{reclamo_id}/estado', [Reclamo::class, 'updateEstado'
 
 Route::get('/api/reclamo/cliente/{cliente_id}', [Reclamo::class, 'getReclamosCliente']);
 Route::get('/api/reclamo/{reclamo_id}', [Reclamo::class, 'getReclamoById']);
+
+Route::post('api/sugerencia',[Sugerencia::class, 'guardarSugerencia']);
+Route::get('api/sugerencia',[Sugerencia::class, 'getSugerencia']);
