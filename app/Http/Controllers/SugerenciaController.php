@@ -12,13 +12,7 @@ class SugerenciaController extends Controller
      */
     public function index()
     {
-        try {
-            $sugerencias = Sugerencia::get();
-            // Aqui se ebtienen las sugerencias
-            return $sugerencias;
-        } catch (Exception $e) {
-            return "No se pudo obtener las sugerencias";
-        }
+        //
     }
 
     /**
@@ -36,7 +30,6 @@ class SugerenciaController extends Controller
                 [
                     'cliente_id'    => $request['cliente_id'],
                     'contenido'     => $request['contenido'],
-                    'fecha'         => $request['fecha'],
                     'valoracion'    => $request['valoracion']
                 ]
             );
@@ -45,6 +38,16 @@ class SugerenciaController extends Controller
             return "No se pudo realizar la sugerencia";
         }
         return "Sugerencia registrada";
+    }
+
+    //Aqui se obtienen las sugerencias guardadas
+    public function getSugerencia(){
+        try {
+            $sugerencias = Sugerencia::get();
+            return $sugerencias;
+        } catch (Exception $e) {
+            return "No se pudo obtener las sugerencias";
+        }
     }
 
     /**

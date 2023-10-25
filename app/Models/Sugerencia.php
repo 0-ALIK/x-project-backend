@@ -39,9 +39,4 @@ class Sugerencia extends Model
             throw new \Exception('Valoración fuera del rango permitido (1-5). Por favor, ingrese un valor válido.');
         }
     }
-
-    public static function obtenerSugerencia()
-    {
-        return self::get();
-    }
 }
