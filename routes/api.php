@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReclamoController as Reclamo;
 use App\Http\Controllers\SugerenciaController as Sugerencia;
+use App\Http\Controllers\EmpresaController as Empresa;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,6 +16,11 @@ use App\Http\Controllers\SugerenciaController as Sugerencia;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+###########################################
+########    RUTAS DE EMPRESAS   ##########
+###########################################
+Route::get('/api/empresas',  [Empresa::class, 'index']);
 
 ###########################################
 ########    RUTAS DE RECLAMOS    ##########
