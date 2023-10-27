@@ -86,6 +86,7 @@ devuelve todas las empresas
 | ------------ | ------------ |
 | `límite`| cantidad de los clientes que va a traer (por defecto 10) |
 | `página`| paginacion|
+| `cliente`| busca la empresa a la cual pertenece un cliente con su id |
 | `empresa`| busca por el nombre de la empresa – se ignora el params limite|
 | `ruc`| busca por el ruc de la empresa – se ignora el params limite  |
 | `correo`|  busca por el correo de la empresa – se ignora el params limite|
@@ -136,34 +137,6 @@ devuelve todos los datos de una empresa
     archivoRegistro: “link del archivo pdf”, 
     RazonSocial: “...”, 
     Detalles: “...”, 
-    Colaboradores: [ 
-        { 
-            Id: “...”, 
-            cedula: “....”, 
-            Nombre: “....”, 
-            Apellido: “...”, 
-            Correo: “...”, 
-            Telefono: “....”, 
-            Genero: “...”, 
-            Foto: “link de la foto”, 
-            FechaRegistro: “...” 
-        }, 
-        { informacion del colaborador 2 }, 
-        …. 
-    ], 
-    Sucursales:  [ 
-        {
-            Id: “...”, 
-            Nombre: “...”, 
-            Provincia: “...”, 
-            Ciudad: ””, 
-            Direccion: “...”, 
-            Foto: “link de la foto?”, 
-            Telefono: “....” 
-        }, 
-        { informacion de la sucursal 2 }, 
-        …. 
-    ] 
 } 
 ```
 ---
@@ -294,17 +267,6 @@ devuelve todos los datos del cliente
     Correo: ””,
     Foto: “link de la foto”,  
     Detalles: “”, 
-    Empresa: { 
-        Id:” …”, 
-        nombre: “”, 
-        ruc: “…”, 
-        correo: “…”, 
-        telefono: “…”, 
-        Foto: “link de la foto”, 
-        archivoRegistro: “link del archivo pdf”, 
-        RazonSocial: “...”, 
-        Detalles: “...”, 
-    }, 
     Direccion:[ 
         { 
             Provincia: “”, 
@@ -541,7 +503,12 @@ no se :v
 ```
 ## Sucursal
 ### <span style="background-color:#67DA30; color: white; padding: 2px 5px; border-radius: 50px;">GET</span> api/sucursal `AUTH ADMIN, EMPRESA, EMPLEADO`
-devuelve todas las sucursales 
+devuelve todas las sucursales
+#### Params
+| Param | Descripcion|
+| ------------ | ------------ |
+| `empresa`| devuelve todas las sucursales de una empresa|
+
 #### Validaciones
 |Validaciones|
 |------------|
