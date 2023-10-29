@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReclamoController as Reclamo;
 use App\Http\Controllers\SugerenciaController as Sugerencia;
 use App\Http\Controllers\EmpresaController as Empresa;
+use App\Http\Controllers\SolicitudesController as Solicitudes;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,9 +19,26 @@ use App\Http\Controllers\EmpresaController as Empresa;
 */
 
 ###########################################
-########    RUTAS DE EMPRESAS   ##########
+########    RUTAS DE EMPRESAS   ###########
 ###########################################
-Route::get('/api/empresas',  [Empresa::class, 'index']);
+Route::get('/api/empresas',  [Empresa::class, 'getAllEmpresas']);
+Route::get('/api/empresas/{id}',  [Empresa::class, 'getEmpresa']);
+
+Route::post('/api/empresas',  [Empresa::class, 'guardarEmpresa']);
+
+Route::put('/api/empresas/{id}',  [Empresa::class, 'actualizarEmpresa']);
+
+Route::delete('/api/empresas/{id}',  [Empresa::class, 'eliminarEmpresa']);
+
+###########################################
+########    RUTAS DE SOLICITUDES   ########
+###########################################
+Route::get('/api/solicitudes',  [Solicitudes::class, 'getAllSolicitudes']);
+
+Route::put('/api/solicitudes/{id}',  [Solicitudes::class, 'actualizarSolicitud']);
+
+//se rechaza la empresa y se elimina xd
+Route::delete('/api/solicitudes/{id}',  [Solicitudes::class, 'rechazarSolicitud']);
 
 ###########################################
 ########    RUTAS DE RECLAMOS    ##########

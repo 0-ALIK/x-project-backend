@@ -13,6 +13,15 @@ class Empresa extends Model
 
     //declaramos el pk
     protected $primaryKey = 'id_empresa';
+
+    //declaramos los campos que se pueden escribir
+    protected $fillable = [
+        'usuario_id',
+        'razon_social',
+        'ruc',
+        'documento',
+        'estado'
+    ];
     
     // Relacionamento 1:M empresa - cliente
     public function Cliente(){

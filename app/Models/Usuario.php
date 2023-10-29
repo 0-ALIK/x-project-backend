@@ -15,6 +15,17 @@ class Usuario extends Model
     //declaramos el pk
     protected $primaryKey = 'id_usuario';
 
+    //declaramos los campos que se pueden escribir
+    protected $fillable = [
+        'nombre',
+        'telefono',
+        'correo',
+        'pass',
+        'rol',
+        'foto',
+        'detalles'
+    ];
+
     // Relacionamento 1:1 usuario - empresa
     public function Empresa(){
         return $this->hasOne(Empresa::class,'usuario_id', 'id_usuario');
