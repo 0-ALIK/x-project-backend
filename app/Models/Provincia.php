@@ -15,6 +15,11 @@ class Provincia extends Model
     //declaramos el pk
     protected $primaryKey = 'id_provincia';
 
+    //declaramos los campos que se pueden escribir
+    protected $fillable = [
+        'nombre'
+    ];
+
     // Relacionamento 1:M provincia - direccion
     public function Direccion(){
         return $this->hasMany(Direccion::class, 'provincia_id', 'id_provincia');

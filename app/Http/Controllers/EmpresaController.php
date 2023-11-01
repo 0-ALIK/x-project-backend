@@ -10,6 +10,8 @@ use App\Http\Requests\StoreEmpresaRequest;
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateEmpresaRequest;
 Use Exception;
+use Illuminate\Support\Facades\DB;
+
 
 class EmpresaController extends Controller
 {
@@ -48,7 +50,7 @@ class EmpresaController extends Controller
         return $empresas;
     }
 
-    //FALTA VALIDAR SESION
+    //FALTA VALIDAR SESION - falta manejo de fotos
     public function guardarEmpresa(Request $request){
         //validamos los campos
         $camposValidados = $request->validate([
@@ -64,6 +66,8 @@ class EmpresaController extends Controller
         $camposValidados['pass'] = bcrypt($camposValidados['pass']);
         try{
         //creamos el usuario
+
+        DB::beginTransaction();
         $usuario = Usuario::create([
             'nombre' => $camposValidados['nombre'],
             'telefono' => $camposValidados['telefono'],
@@ -83,14 +87,16 @@ class EmpresaController extends Controller
             'estado' => 'pendiente',
         ]);
 
+        DB::commit();
         //error_log($empresa);
         return $this->getEmpresa($empresa->id_empresa);
         } catch(Exception $ex){
+            DB::rollBack();
             return response()->json( ["mensaje" => "Ocurrió un error", "status" => 500],500 );
         }
     }
 
-    //FALTA VALIDAR SESION
+    //FALTA VALIDAR SESION - falta manejo de fotos 
     public function actualizarEmpresa(Request $request, $id){
         //validamos los campos
         $camposValidados = $request->validate([

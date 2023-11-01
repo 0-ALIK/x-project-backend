@@ -16,6 +16,11 @@ class Cliente_direcciones extends Model
     protected $primaryKey = ['cliente_id', 'direccion_id'];
     public $incrementing = false;
 
+    protected $fillable = [
+        'cliente_id',
+        'direccion_id'
+    ];
+
     public function Direccion(){
         return $this->belongsTo(Direccion::class, 'id_direccion', 'direccion_id');
     }

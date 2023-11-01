@@ -14,6 +14,17 @@ class Cliente extends Model
     //declaramos el pk
     protected $primaryKey = 'id_cliente';
 
+    //declaramos los campos que se pueden escribir
+    protected $fillable = [
+        'usuario_id',
+        'empresa_id',
+        'cedula',
+        'genero',
+        'apellido',
+        'documento',
+        'estado'
+    ];
+
     // Relacionamento 1:M empresa - cliente
     public function Cliente(){
         return $this->belongsTo(Empresa::class, 'empresa_id', 'id_empresa');

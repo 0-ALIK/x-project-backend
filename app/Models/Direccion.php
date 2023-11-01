@@ -15,6 +15,14 @@ class Direccion extends Model
     //declaramos el pk
     protected $primaryKey = 'id_direccion';
 
+    //declaramos los campos que se pueden escribir
+    protected $fillable = [
+        'provincia_id',
+        'codigo_postal',
+        'telefono',
+        'detalles'
+    ];
+
     // Relacionamento 1:M provincia - direccion
     public function Provincia(){
         return $this->belongsTo(Provincia::class, 'provincia_id', 'id_provincia');
