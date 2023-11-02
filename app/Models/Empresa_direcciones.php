@@ -16,6 +16,12 @@ class Empresa_direcciones extends Model
     protected $primaryKey = ['empresa_id', 'direccion_id'];
     public $incrementing = false;
 
+    protected $fillable =[
+            'empresa_id',
+            'direccion_id',
+            'nombre'
+    ];
+
     public function Direccion(){
         return $this->belongsTo(Direccion::class, 'id_direccion', 'direccion_id');
     }

@@ -46,6 +46,7 @@ class Modulo3Seeder extends Seeder
             Empresa_direcciones::create([
                 'empresa_id' => 1,
                 'direccion_id' => 1,
+                'nombre' => 'Sucursal 1'
             ]);
     }
 }
