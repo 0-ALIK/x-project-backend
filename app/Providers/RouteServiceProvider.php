@@ -28,13 +28,10 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
+        // Esta configuración sirve para tratar las rutas siempre como API.
         $this->routes(function () {
             Route::middleware('api')
-                ->prefix('api')
                 ->group(base_path('routes/api.php'));
-
-            Route::middleware('web')
-                ->group(base_path('routes/web.php'));
         });
     }
 }
