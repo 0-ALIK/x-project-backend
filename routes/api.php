@@ -8,6 +8,7 @@ use App\Http\Controllers\EmpresaController as Empresa;
 use App\Http\Controllers\SolicitudesController as Solicitudes;
 use App\Http\Controllers\ClienteController as Cliente;
 use App\Http\Controllers\DireccionClienteController as DireccionCliente;
+use App\Http\Controllers\SucursalController as Sucursal;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,7 +33,14 @@ Route::post('/api/empresas',  [Empresa::class, 'guardarEmpresa']);
 Route::put('/api/empresas/{id}',  [Empresa::class, 'actualizarEmpresa']);
 
 Route::delete('/api/empresas/{id}',  [Empresa::class, 'eliminarEmpresa']);
-
+###########################################
+########    RUTAS DE SUCURSALES   ###########
+###########################################
+Route::get('/api/sucursales', [Sucursal::class, 'getAllSucursales']);
+Route::get('/api/sucursales/{id}', [Sucursal::class, 'getSucursal']);
+Route::post('/api/sucursales', [Sucursal::class, 'guardarSucursal']);
+Route::put('/api/sucursales/{empresa_id}/{direccion_id}', [Sucursal::class, 'actualizarSucursal']);
+Route::delete('/api/sucursales/{empresa_id}/{direccion_id}', [Sucursal::class, 'eliminarSucursal']);
 ###########################################
 ########    RUTAS DE SOLICITUDES   ########
 ###########################################
