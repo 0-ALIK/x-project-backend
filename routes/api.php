@@ -36,8 +36,7 @@ Route::delete('/api/empresas/{id}',  [Empresa::class, 'eliminarEmpresa']);
 ###########################################
 ########    RUTAS DE SUCURSALES   ###########
 ###########################################
-Route::get('/api/sucursales', [Sucursal::class, 'getAllSucursales']);
-Route::get('/api/sucursales/{id}', [Sucursal::class, 'getSucursal']);
+Route::get('/api/sucursales/{id}', [Sucursal::class, 'getSucursales']);
 Route::post('/api/sucursales', [Sucursal::class, 'guardarSucursal']);
 Route::put('/api/sucursales/{empresa_id}/{direccion_id}', [Sucursal::class, 'actualizarSucursal']);
 Route::delete('/api/sucursales/{empresa_id}/{direccion_id}', [Sucursal::class, 'eliminarSucursal']);
