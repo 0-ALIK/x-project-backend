@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\AgregarMarcaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReclamoController as Reclamo;
 use App\Http\Controllers\SugerenciaController as Sugerencia;
+use App\Http\Controllers\EliminarMarcaController;
+use App\Http\Controllers\EliminarProductoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,8 +36,12 @@ Route::patch('/api/reclamo/{reclamo_id}/prioridad', [Reclamo::class, 'updatePrio
 Route::post('api/sugerencia',   [Sugerencia::class, 'guardarSugerencia']);
 Route::get('api/sugerencia',    [Sugerencia::class, 'getSugerencia']);
 
-
-
+#RUTAS MODULO 1
+Route::get('/api/inventario', 'InventarioController@index');
+Route::post('/api/agregar-marca', [AgregarMarcaController::class, 'GuardarMarca']);
+Route::post('/api/agregar-producto', [AgregarMarcaController::class, 'GuardarProducto']);
+Route::delete('/api/eliminar-producto/{id_producto}', [EliminarProductoController::class, 'eliminarProducto'])->name('eliminar.producto');
+Route::delete('/api/eliminar-marca/{id_marca}', [EliminarMarcaController::class, 'eliminarMarca'])->name('eliminar.marca');
 
 
 
