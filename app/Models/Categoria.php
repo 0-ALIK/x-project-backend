@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Categoria extends Model
 {
     use HasFactory;
-    protected $table = 'reclamo_categoria';
+    protected $table = 'categoria';
     protected $primaryKey = 'id_categoria';
 
-    protected $fillable = ['categoria'];
+    protected $fillable = ['nombre'];
 }
