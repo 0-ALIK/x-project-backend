@@ -8,7 +8,7 @@ use App\Models\Producto;
 
 class InventarioController extends Controller
 {
-    public function index(Request $request)
+    public function VerInventario(Request $request)
 {
     // Realiza las validaciones
     $request->validate([

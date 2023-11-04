@@ -7,6 +7,7 @@ use App\Http\Controllers\ReclamoController as Reclamo;
 use App\Http\Controllers\SugerenciaController as Sugerencia;
 use App\Http\Controllers\EliminarMarcaController;
 use App\Http\Controllers\EliminarProductoController;
+use App\Http\Controllers\InventarioController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,7 +38,7 @@ Route::post('api/sugerencia',   [Sugerencia::class, 'guardarSugerencia']);
 Route::get('api/sugerencia',    [Sugerencia::class, 'getSugerencia']);
 
 #RUTAS MODULO 1
-Route::get('/api/inventario', 'InventarioController@index');
+Route::get('/api/inventario', [InventarioController::class, 'VerInventario']);
 Route::post('/api/agregar-marca', [AgregarMarcaController::class, 'GuardarMarca']);
 Route::post('/api/agregar-producto', [AgregarMarcaController::class, 'GuardarProducto']);
 Route::delete('/api/eliminar-producto/{id_producto}', [EliminarProductoController::class, 'eliminarProducto'])->name('eliminar.producto');
