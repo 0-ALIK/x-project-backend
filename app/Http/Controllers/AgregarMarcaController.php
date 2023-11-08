@@ -8,7 +8,7 @@ use App\Models\Marca;
 
 class AgregarMarcaController extends Controller
 {
-    public function GuardarMarca(Request $request){
+    public function guardarMarca(Request $request){
         $request->validate([
             'nombre'=> 'required',
             'descripcion'=> 'required',
