@@ -44,8 +44,8 @@ class MarcaController extends Controller
         return redirect()->route('app/inventario'); // Redirige a la página que desees después de guardar la marca.
     }
 
-    //actualiza la informacion de un producto en especifico
-    public function updateProducto(Request $request, $id_marca) {
+    //actualiza la informacion de una marca en especifico
+    public function updateMarca(Request $request, $id_marca) {
         $marca = Marca::find($id_marca);
     
         if (!$marca) {
