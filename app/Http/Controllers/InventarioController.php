@@ -8,8 +8,8 @@ use App\Models\Producto;
 
 class InventarioController extends Controller
 {
-    public function verInventario(Request $request)
-    {
+    //muestra todo el inventario
+    public function verInventario(Request $request){
         // Realiza las validaciones
         $request->validate([
             // Debe haber productos para mostrar
@@ -32,6 +32,35 @@ class InventarioController extends Controller
         }
 
         return response()->json($productos, 200);
+    }
+
+    //trae un producto en especifico
+    public function buscarProductos(Request $request){
+        // Validaciones para los parámetros de búsqueda
+        $request->validate([
+            'nombre' => 'string',
+            'categoria' => 'integer',
+        ]);
+
+        // Obtén los parámetros de búsqueda del formulario
+        $nombre = $request->input('nombre');
+        $categoria = $request->input('categoria');
+
+        // Consulta de productos con filtros
+        $query = Producto::query();
+
+        if (!empty($nombre)) {
+            $query->where('nombre', 'like', '%' . $nombre . '%');
+        }
+
+        if (!empty($categoria)) {
+            $query->where('categoria_id', $categoria);
+        }
+
+        $productosFiltrados = $query->get();
+
+        // Devuelve los resultados de la búsqueda a la vista
+        return view('inventario.resultados', ['productos' => $productosFiltrados]);
     }
 }
 

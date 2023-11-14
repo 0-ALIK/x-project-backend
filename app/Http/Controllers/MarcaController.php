@@ -20,6 +20,30 @@ class MarcaController extends Controller
         }
     }
 
+    //agrega una marca
+    public function guardarMarca(Request $request){
+        $request->validate([
+            'nombre'=> 'required',
+            'descripcion'=> 'required',
+            'logo'=> 'required'
+        ]);
+
+        $nombre = $request->input('nombre');
+        $marcaExistente = Marca::where('nombre', $nombre)->first();
+    
+        if ($marcaExistente) {
+            return redirect()->back()->with('error', 'Ya existe una marca con el mismo nombre.');
+        }
+
+        $AgregarMarca = new Marca;
+        $AgregarMarca->nombre = $nombre;
+        $AgregarMarca->descripcion = $request->input('descripcion');
+        $AgregarMarca->logo = $request->input('logo');
+        $AgregarMarca->save();
+
+        return redirect()->route('app/inventario'); // Redirige a la página que desees después de guardar la marca.
+    }
+
     //actualiza la informacion de un producto en especifico
     public function updateProducto(Request $request, $id_marca) {
         $marca = Marca::find($id_marca);
@@ -32,5 +56,18 @@ class MarcaController extends Controller
         $marca->save();
     
         return response()->json(["data" => $marca, "status" => 200]);
+    }
+
+    //eliminar una marca en especifico
+    public function deleteMarca($id_marca){
+        $marca = Marca::find($id_marca);
+
+        if (!$marca) {
+            return response()->json(['error' => 'Marca no encontrada']);
+        }
+
+        $marca->delete();
+
+        return response()->json(['message' => 'Marca eliminada correctamente']);
     }
 }
