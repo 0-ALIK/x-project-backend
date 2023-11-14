@@ -4,16 +4,18 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCategoriaTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('categoria', function (Blueprint $table) {
-            $table->id('id_categoria');
+        Schema::create('marca', function (Blueprint $table) {
+            $table->id('id_marca');
             $table->string('nombre')->unique();
+            $table->string('descripcion');
+            $table->string('logo');
             $table->timestamps();
         });
     }
@@ -23,6 +25,6 @@ class CreateCategoriaTable extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categoria');
+        Schema::dropIfExists('marca');
     }
 };
