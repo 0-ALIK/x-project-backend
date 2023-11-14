@@ -8,7 +8,7 @@ use App\Models\Producto;
 
 class AgregarProductoController extends Controller
 {
-    public function GuardarProducto(Request $request){
+    public function guardarProducto(Request $request){
         $request->validate([
             'nombre'=> 'required',
             'precio_unit'=> 'required',
