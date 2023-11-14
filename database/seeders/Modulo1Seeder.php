@@ -19,19 +19,16 @@ class Modulo1Seeder extends Seeder
     {
         #VALORES POR DEFECTO
         Categoria::create([
-            'id_categoria'=> 2,
-            'nombre'=> 'jugos'
+            'nombre'=> 'soda'
             ]);
 
         Marca::create([
-            'id_marca'=> 2,
-            'nombre'=>'Del valle',
-            'descripcion'=>'esto es una marca de jugos',
+            'nombre'=>'Femsa',
+            'descripcion'=>'esto es una marca de sodas',
             'logo'=>'sin-logo',
         ]);
 
         Producto::create([
-            'id_producto'=>2,
             'marca_id'=>2,
             'categoria_id'=>2,
             'nombre'=> 'Coca-2lt',
@@ -40,6 +37,6 @@ class Modulo1Seeder extends Seeder
             'foto'=>'sin-foto',
             'punto_reorden'=>100,
             'cantidad_cajas'=>100
-            ]);
+        ]);
     }
 }
