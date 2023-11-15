@@ -29,8 +29,8 @@ class Modulo1Seeder extends Seeder
         ]);
 
         Producto::create([
-            'marca_id'=>2,
-            'categoria_id'=>2,
+            'marca_id'=>1,
+            'categoria_id'=>1,
             'nombre'=> 'Coca-2lt',
             'precio_unit'=> 2.00,
             'cantidad_por_caja'=>6,

@@ -44,18 +44,38 @@ class MarcaController extends Controller
         return redirect()->route('app/inventario'); // Redirige a la página que desees después de guardar la marca.
     }
 
+    //obtiene una marca en especifico
+    public function getMarca($id_marca) {
+        try {
+            $marca = Marca::findOrFail($id_marca);
+    
+            return response()->json(["data" => $marca, "status" => 200]);
+        } catch (Exception $e) {    
+            return response()->json(["mensaje" => "Error al obtener la marca", "status" => 500]);
+        }
+    }
+    
+    
+
     //actualiza la informacion de una marca en especifico
     public function updateMarca(Request $request, $id_marca) {
-        $marca = Marca::find($id_marca);
-    
-        if (!$marca) {
-            return response()->json(["mensaje" => "La marca no existe", "status" => 400]);
+        try {
+            $marca = Marca::find($id_marca);
+
+            //verifica que la marca exista
+            if (!$marca) {
+                return response()->json(["mensaje" => "La marca no existe", "status" => 400]);
+            }
+
+            $marca->fill($request->all());
+            $marca->save();
+
+            return response()->json( ["data" => $marca, "status" => 200] );
+
+        } catch(Exception $e){
+            print($e);
+            return response()->json( ["mensaje" => "Ocurrió un problema al buscar la marcas", "status" => 404] );
         }
-    
-        $marca->fill($request->all());
-        $marca->save();
-    
-        return response()->json(["data" => $marca, "status" => 200]);
     }
 
     //eliminar una marca en especifico

@@ -8,21 +8,22 @@ use App\Models\Producto;
 
 class InventarioController extends Controller
 {
+
     //muestra todo el inventario
     public function verInventario(Request $request){
         // Realiza las validaciones
-        $request->validate([
-            // Debe haber productos para mostrar
-            'productos' => 'required',
-        ]);
+        // $request->validate([
+        //     // Debe haber productos para mostrar
+        //     'producto' => 'required'
+        // ]);
 
         // Validación para mostrar un punto de reorden
         // Comprueba si hay algún producto cuya cantidad en stock esté por debajo del punto de reorden.
-        $productosPuntoReorden = Producto::whereColumn('cantidad_stock', '<', 'punto_reorden')->get();
+        // $productosPuntoReorden = Producto::whereColumn('cantidad_stock', '<', 'punto_reorden')->get();
 
-        if ($productosPuntoReorden->isEmpty()) {
-            return response()->json(['message' => 'No hay productos por debajo del punto de reorden.'], 200);
-        }
+        // if ($productosPuntoReorden->isEmpty()) {
+        //     return response()->json(['message' => 'No hay productos por debajo del punto de reorden.'], 200);
+        // }
 
         // Consulta los productos
         $productos = Producto::all();
