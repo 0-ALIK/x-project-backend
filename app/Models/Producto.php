@@ -20,4 +20,14 @@ class Producto extends Model
         'punto_reorden',
         'cantidad_cajas'
     ];
+
+    public function marca()
+    {
+        return $this->belongsTo(Marca::class, 'marca_id');
+    }
+
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class, 'categoria_id');
+    }
 }

@@ -19,11 +19,11 @@ class Modulo1Seeder extends Seeder
     {
         #VALORES POR DEFECTO
         Categoria::create([
-            'nombre'=> 'soda'
+            'nombreCategoria'=> 'soda'
             ]);
 
         Marca::create([
-            'nombre'=>'Femsa',
+            'nombreMarca'=>'Femsa',
             'descripcion'=>'esto es una marca de sodas',
             'logo'=>'sin-logo',
         ]);

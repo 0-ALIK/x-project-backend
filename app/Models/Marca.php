@@ -11,8 +11,12 @@ class Marca extends Model
     protected $table = 'marca';
     protected $primaryKey = 'id_marca';
     protected $fillable = [
-        'nombre',
+        'nombreMarca',
         'descripcion',
         'logo'
     ];
+
+    public function productos(){
+        return $this->hasMany(Producto::class, 'id_marca');
+    }
 }

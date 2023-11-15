@@ -11,29 +11,18 @@ class InventarioController extends Controller
 
     //muestra todo el inventario
     public function verInventario(Request $request){
-        // Realiza las validaciones
-        // $request->validate([
-        //     // Debe haber productos para mostrar
-        //     'producto' => 'required'
-        // ]);
+    // Consulta los productos con relaciones cargadas
+    $productos = Producto::join('marca', 'producto.marca_id', '=', 'marca.id_marca')
+    ->join('categoria', 'producto.categoria_id', '=', 'categoria.id_categoria')
+    ->select('categoria.nombreCategoria as Categoria', 'marca.nombreMarca as Marca', 'producto.nombre', 'producto.precio_unit', 'producto.cantidad_por_caja', 'producto.foto', 'producto.punto_reorden', 'producto.cantidad_cajas')
+    ->get();
 
-        // Validación para mostrar un punto de reorden
-        // Comprueba si hay algún producto cuya cantidad en stock esté por debajo del punto de reorden.
-        // $productosPuntoReorden = Producto::whereColumn('cantidad_stock', '<', 'punto_reorden')->get();
-
-        // if ($productosPuntoReorden->isEmpty()) {
-        //     return response()->json(['message' => 'No hay productos por debajo del punto de reorden.'], 200);
-        // }
-
-        // Consulta los productos
-        $productos = Producto::all();
-
-        if ($productos->isEmpty()) {
-            return response()->json(['message' => 'No hay productos para mostrar.'], 404);
-        }
-
-        return response()->json($productos, 200);
+    if ($productos->isEmpty()) {
+        return response()->json(['message' => 'No hay productos para mostrar.'], 404);
     }
+
+    return response()->json($productos, 200);
+}
 
     //trae un producto en especifico
     public function buscarProductos(Request $request){
