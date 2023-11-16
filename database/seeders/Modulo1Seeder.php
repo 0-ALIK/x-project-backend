@@ -19,11 +19,11 @@ class Modulo1Seeder extends Seeder
     {
         #VALORES POR DEFECTO
         Categoria::create([
-            'nombreCategoria'=> 'soda'
+            'nombre'=> 'sodas'
             ]);
 
         Marca::create([
-            'nombreMarca'=>'Femsa',
+            'nombre'=>'femsa',
             'descripcion'=>'esto es una marca de sodas',
             'logo'=>'sin-logo',
         ]);
@@ -36,7 +36,7 @@ class Modulo1Seeder extends Seeder
             'cantidad_por_caja'=>6,
             'foto'=>'sin-foto',
             'punto_reorden'=>100,
-            'cantidad_cajas'=>100
+            'cantidad_caja'=>100
         ]);
     }
 }

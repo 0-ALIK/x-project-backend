@@ -21,28 +21,38 @@ class MarcaController extends Controller
     }
 
     //agrega una marca
-    public function guardarMarca(Request $request){
-        $request->validate([
-            'nombre'=> 'required',
-            'descripcion'=> 'required',
-            'logo'=> 'required'
-        ]);
+    public function guardarMarca(Request $request)
+{
+    // Validar la solicitud
+    $request->validate([
+        'nombre' => 'required|unique:marca',
+        'descripcion' => 'required',
+        'logo' => 'required',
+    ]);
 
+    try {
+        // Verificar si la marca ya existe
         $nombre = $request->input('nombre');
         $marcaExistente = Marca::where('nombre', $nombre)->first();
-    
+
         if ($marcaExistente) {
-            return redirect()->back()->with('error', 'Ya existe una marca con el mismo nombre.');
+            return response()->json(['error' => 'Ya existe una marca con el mismo nombre.'], 400);
         }
 
-        $AgregarMarca = new Marca;
-        $AgregarMarca->nombre = $nombre;
-        $AgregarMarca->descripcion = $request->input('descripcion');
-        $AgregarMarca->logo = $request->input('logo');
-        $AgregarMarca->save();
+        // Crear una nueva marca
+        $nuevaMarca = new Marca;
+        $nuevaMarca->nombre = $nombre;
+        $nuevaMarca->descripcion = $request->input('descripcion');
+        $nuevaMarca->logo = $request->input('logo');
+        $nuevaMarca->save();
 
-        return redirect()->route('app/inventario'); // Redirige a la página que desees después de guardar la marca.
+        // Devolver una respuesta exitosa
+        return response()->json(['message' => 'Marca creada con éxito.'], 201);
+    } catch (\Exception $e) {
+        // Manejar cualquier error y devolver una respuesta de error
+        return response()->json(['error' => 'Error al procesar la solicitud.'], 500);
     }
+}
 
     //obtiene una marca en especifico
     public function getMarca($id_marca) {

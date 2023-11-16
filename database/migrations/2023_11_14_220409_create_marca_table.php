@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('marca', function (Blueprint $table) {
             $table->id('id_marca');
-            $table->string('nombreMarca')->unique();
+            $table->string('nombre')->unique();
             $table->string('descripcion');
             $table->string('logo');
             $table->timestamps();

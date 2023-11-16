@@ -21,39 +21,49 @@ class ProductoController extends Controller
     }
 
     //agrega un nuevo producto
-    public function guardarProducto(Request $request){
-        $request->validate([
-            'marca_id'=> 'required',
-            'categoria_id'=> 'required',
-            'nombre'=> 'required',
-            'precio_unit'=> 'required',
-            'cantidad_por_caja'=> 'required',
-            'foto'=> 'required',
-            'punto_reorden'=> 'required',
-            'cantidad_caja'=> 'required'
-        ]);
+    public function guardarProducto(Request $request)
+{
+    // Validar la solicitud
+    $request->validate([
+        'marca_id' => 'required',
+        'categoria_id' => 'required',
+        'nombre' => 'required|unique:producto',
+        'precio_unit' => 'required',
+        'cantidad_por_caja' => 'required',
+        'foto' => 'required',
+        'punto_reorden' => 'required',
+        'cantidad_caja' => 'required',
+    ]);
 
-        //Validación para comprobar si ya existe un producto con el mismo nombre
+    try {
+        // Validación para comprobar si ya existe un producto con el mismo nombre
         $nombre = $request->input('nombre');
         $productoExistente = Producto::where('nombre', $nombre)->first();
-    
+
         if ($productoExistente) {
-            return redirect()->back()->with('error', 'Ya existe un producto con el mismo nombre.');
+            return response()->json(['error' => 'Ya existe un producto con el mismo nombre.'], 400);
         }
 
-        $AgregarProducto = new Producto;
-        $AgregarProducto->marca_id = $request->input('marca');
-        $AgregarProducto->categoria_id = $request->input('categoria');
-        $AgregarProducto->nombre = $nombre;
-        $AgregarProducto->precio_unit = $request->input('precio_unit');
-        $AgregarProducto->cantidad_por_caja = $request->input('cantidad_por_caja');
-        $AgregarProducto->foto = $request->input('foto');
-        $AgregarProducto->punto_reorden = $request->input('punto_reorden');
-        $AgregarProducto->cantidad_caja = $request->input('cantidad_caja');
-        $AgregarProducto->save();
-        
-        return redirect()->route('app/inventario'); // Redirige a la página que desees después de guardar el producto.
+        // Crear un nuevo producto
+        $nuevoProducto = new Producto;
+        $nuevoProducto->marca_id = $request->input('marca_id');
+        $nuevoProducto->categoria_id = $request->input('categoria_id');
+        $nuevoProducto->nombre = $nombre;
+        $nuevoProducto->precio_unit = $request->input('precio_unit');
+        $nuevoProducto->cantidad_por_caja = $request->input('cantidad_por_caja');
+        $nuevoProducto->foto = $request->input('foto');
+        $nuevoProducto->punto_reorden = $request->input('punto_reorden');
+        $nuevoProducto->cantidad_caja = $request->input('cantidad_caja');
+        $nuevoProducto->save();
+
+        // Devolver una respuesta exitosa
+        return response()->json(['message' => 'Producto creado con éxito.'], 201);
+    } catch (\Exception $e) {
+        // Manejar cualquier error y devolver una respuesta de error
+        return response()->json(['error' => 'Error al procesar la solicitud.'], 500);
     }
+}
+
 
     //actualiza la informacion de un producto en especifico
     public function updateProducto(Request $request, $id_producto) {

@@ -21,24 +21,35 @@ class CategoriaController extends Controller
     }
 
     //agrega una marca
-    public function guardarCategoria(Request $request){
-        $request->validate([
-            'nombre'=> 'required'
-        ]);
+    public function guardarCategoria(Request $request)
+{
+    // Validar la solicitud
+    $request->validate([
+        'nombre' => 'required|unique:categoria',
+    ]);
 
+    try {
+        // Verificar si la categoría ya existe
         $nombre = $request->input('nombre');
         $categoriaExistente = Categoria::where('nombre', $nombre)->first();
-    
+
         if ($categoriaExistente) {
-            return redirect()->back()->with('error', 'Ya existe una categoria con el mismo nombre.');
+            return response()->json(['error' => 'Ya existe una categoría con el mismo nombre.'], 400);
         }
 
-        $AgregarCategoria = new Categoria;
-        $AgregarCategoria->nombre = $nombre;
+        // Crear una nueva categoría
+        $nuevaCategoria = new Categoria;
+        $nuevaCategoria->nombre = $nombre;
+        $nuevaCategoria->save();
 
-        //ruta pendiente para agregar la categoria
-        return redirect()->route('app/inventario'); // Redirige a la página que desees después de guardar la categoria.
+        // Devolver una respuesta exitosa
+        return response()->json(['message' => 'Categoría creada con éxito.'], 201);
+    } catch (\Exception $e) {
+        // Manejar cualquier error y devolver una respuesta de error
+        return response()->json(['error' => 'Error al procesar la solicitud.'], 500);
     }
+}
+
 
     //actualiza la informacion de una categoria en especifico
     public function updateCategoria(Request $request, $id_categoria) {
