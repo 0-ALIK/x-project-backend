@@ -70,14 +70,14 @@ class ProductoController extends Controller
     }
 
     //elimina un producto en especifico
-    public function deleteProducto($id) {
+    public function deleteProducto($id_producto){
         try {
-            $producto = Producto::findOrFail($id);
+            $producto = Producto::findOrFail($id_producto);
             $producto->delete();
 
-            return redirect()->route('productos.index')->with('success', 'Producto eliminado con éxito');
-        } catch (Exception $e) {
-            return back()->with('error', 'Producto no encontrado');
+            return response()->json(['success' => true, 'message' => 'Producto eliminado con éxito'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Producto no encontrado'], 404);
         }
     }    
 }

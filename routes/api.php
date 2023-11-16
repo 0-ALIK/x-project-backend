@@ -24,16 +24,16 @@ Route::post('/api/inventario',[InventarioController::class, 'buscarProductos']);
 Route::get('/api/marca', [MarcaController::class, 'getAllMarcas']);
 Route::post('/api/marca', [MarcaController::class, 'guardarMarca']);
 Route::get('/api/marca/{id_marca}', [MarcaController::class, 'getMarca']);
-Route::put('/api/marca', [MarcaController::class, 'updateMarca']);
-Route::delete('/api/marca', [MarcaController::class, 'deleteMarca']);
+Route::put('/api/marca/{id_marca}', [MarcaController::class, 'updateMarca']);
+Route::delete('/api/marca/{id_marca}', [MarcaController::class, 'deleteMarca']);
 Route::get('/api/categoria', [CategoriaController::class, 'getAllCategorias']);
 Route::post('/api/categoria', [CategoriaController::class, 'guardarCategoria']);
-Route::put('/api/categoria', [CategoriaController::class, 'updateCategoria']);
-Route::delete('/api/categoria', [CategoriaController::class, 'deleteCategoria']);
+Route::put('/api/categoria/{id_categoria}', [CategoriaController::class, 'updateCategoria']);
+Route::delete('/api/categoria/{id_categoria}', [CategoriaController::class, 'deleteCategoria']);
 Route::get('/api/producto', [ProductoController::class, 'getAllProductos']);
 Route::post('/api/producto', [ProductoController::class, 'guardarProducto']);
-Route::put('/api/producto', [ProductoController::class, 'updateProducto']);
-Route::delete('/api/producto', [ProductoController::class, 'deleteProducto']);
+Route::put('/api/producto/{id_producto}', [ProductoController::class, 'updateProducto']);
+Route::delete('/api/producto/{id_producto}', [ProductoController::class, 'deleteProducto']);
 
 
 
