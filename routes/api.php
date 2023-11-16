@@ -4,6 +4,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReclamoController as Reclamo;
 use App\Http\Controllers\SugerenciaController as Sugerencia;
+use App\Http\Controllers\EmpresaController as Empresa;
+use App\Http\Controllers\SolicitudesController as Solicitudes;
+use App\Http\Controllers\ClienteController as Cliente;
+use App\Http\Controllers\DireccionClienteController as DireccionCliente;
+use App\Http\Controllers\SucursalController as Sucursal;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,6 +20,61 @@ use App\Http\Controllers\SugerenciaController as Sugerencia;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+###########################################
+########    RUTAS DE EMPRESAS   ###########
+###########################################
+Route::get('/api/empresas',  [Empresa::class, 'getAllEmpresas']);
+
+Route::get('/api/empresas/{id}',  [Empresa::class, 'getEmpresa']);
+
+Route::post('/api/empresas',  [Empresa::class, 'guardarEmpresa']);
+
+Route::put('/api/empresas/{id}',  [Empresa::class, 'actualizarEmpresa']);
+
+Route::delete('/api/empresas/{id}',  [Empresa::class, 'eliminarEmpresa']);
+###########################################
+########    RUTAS DE SUCURSALES   ###########
+###########################################
+Route::get('/api/sucursales/{id}', [Sucursal::class, 'getSucursales']);
+Route::post('/api/sucursales', [Sucursal::class, 'guardarSucursal']);
+Route::put('/api/sucursales/{empresa_id}/{direccion_id}', [Sucursal::class, 'actualizarSucursal']);
+Route::delete('/api/sucursales/{empresa_id}/{direccion_id}', [Sucursal::class, 'eliminarSucursal']);
+###########################################
+########    RUTAS DE SOLICITUDES   ########
+###########################################
+Route::get('/api/solicitudes',  [Solicitudes::class, 'getAllSolicitudes']);
+
+Route::put('/api/solicitudes/{id}',  [Solicitudes::class, 'actualizarSolicitud']);
+
+//se rechaza la empresa y se elimina xd
+Route::delete('/api/solicitudes/{id}',  [Solicitudes::class, 'rechazarSolicitud']);
+
+###########################################
+########    RUTAS DE Clientes    ##########
+###########################################
+
+Route::get('/api/clientes',  [Cliente::class, 'getAllClientes']);
+
+Route::get('/api/clientes/{id}',  [Cliente::class, 'getCliente']);
+
+Route::post('/api/clientes',  [Cliente::class, 'guardarCliente']);
+
+Route::put('/api/clientes/{id}',  [Cliente::class, 'actualizarCliente']);
+
+Route::delete('/api/clientes/{id}',  [Cliente::class, 'eliminarCliente']);
+
+###########################################
+##    RUTAS DE Direccion Clientes    ######
+###########################################
+
+Route::get('/api/clientes/{id}/direcciones',  [DireccionCliente::class, 'getClienteDirecciones']);
+
+Route::post('/api/clientes/{id}/direcciones',  [DireccionCliente::class, 'guardarClienteDireccion']);
+
+Route::put('/api/clientes/{id}/direcciones/{id_direccion}',  [DireccionCliente::class, 'actualizarClienteDireccion']);
+
+Route::delete('/api/clientes/{id}/direcciones/{id_direccion}',  [DireccionCliente::class, 'eliminarClienteDireccion']);
 
 ###########################################
 ########    RUTAS DE RECLAMOS    ##########
