@@ -13,7 +13,7 @@ class Empresa_direcciones extends Model
     protected $table = 'empresa_direcciones';
 
     //declaramos el pk
-    protected $primaryKey = ['empresa_id', 'direccion_id'];
+    protected $primaryKey = 'direccion_id';
     public $incrementing = false;
 
     protected $fillable =[

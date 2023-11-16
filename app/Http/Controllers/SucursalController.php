@@ -24,7 +24,7 @@ class SucursalController extends Controller
         ->join('empresa', 'empresa_direcciones.empresa_id', '=', 'empresa.id_empresa')
         ->join('direccion', 'empresa_direcciones.direccion_id', '=', 'direccion.id_direccion')
         ->join('provincia', 'direccion.provincia_id', '=', 'provincia.id_provincia')
-        ->where('empresa.direccion_id', '=', $empresa_id)
+        ->where('empresa_id', '=', $empresa_id)
         ->get();
 
         // Verificar si no existen sucursales de esa empresa
@@ -38,18 +38,28 @@ class SucursalController extends Controller
             $camposValidados = $request->validate([
                 //para tabla Sucursal (Empresa_direcciones)
                 'empresa_id' => 'required',
-                'direccion_id' => 'required',
                 'nombre' => ['required','min:3'],
                 //para tabla Direccion
-                'detalles' => ['required','min:3'],
+                'provincia_id' => 'required',
+                'codigo_postal' => ['required','min:3'],
                 'telefono' => ['required','min:3'],
             ]);
-
+            $detalles = $request->input('detalles');
             try{
                 DB::beginTransaction();
+
+                $Direccion = Direccion::create([
+                    'provincia_id' => $camposValidados['provincia_id'],
+                    'codigo_postal' => $camposValidados['codigo_postal'],
+                    'detalles' => ' ',
+                    'telefono' => $camposValidados['telefono']
+                ]);
+                $detalles ? $Direccion->detalles = $detalles : null;
+                $Direccion->save();
+
                 $Sucursal = Empresa_direcciones::create([
                     'empresa_id' => $camposValidados['empresa_id'],
-                    'direccion_id' => $camposValidados['direccion_id'],
+                    'direccion_id' => $Direccion->id_direccion,
                     'nombre' => $camposValidados['nombre'],
                 ]);
                 $Sucursal->save();
@@ -75,30 +85,30 @@ class SucursalController extends Controller
             }
             */
             $camposValidados = $request->validate([
-                'nombre' => ['min:3'],
-                'telefono' => ['min:3'],
-                'detalles' => ['min:3'],
+                'nombre' => ['required','min:3'],
+                'provincia_id' => 'required',
+                'codigo_postal' => ['required','min:3'],
+                'telefono' => 'required'
             ]);
-            // Sucursal es null si no encuentra la sucursal con los id's enviados (tabla Empresa_direcciones)
-            $sucursal = Empresa_direcciones::where('empresa_id', $empresa_id)
-            ->where('direccion_id', $direccion_id)
-            ->update([
-                'nombre' => $camposValidados['nombre'],
-            ]);
-            // Si no encuentra sucursal, lo indica y muestra los id's ingresados
-            if (!$sucursal) {
-                return response()->json(['mensaje' => 'Sucursal no encontrada, empresa_id: '.$empresa_id.'direccion_id: '.$direccion_id, 'status' => 404], 404);
+            $detalles = $request->input('detalles');
+            try{
+                DB::beginTransaction();
+                $Direccion = Direccion::find($direccion_id);
+                $Direccion->provincia_id = $camposValidados['provincia_id'];
+                $Direccion->codigo_postal = $camposValidados['codigo_postal'];
+                $Direccion->telefono = $camposValidados['telefono'];
+                $detalles ? $Direccion->detalles = $detalles : null;
+                $Direccion->save();
+                
+                $Sucursal = Empresa_direcciones::find($direccion_id);
+                $Sucursal->nombre = $camposValidados['nombre'];
+                $Sucursal->save();
+                DB::commit();
+                return $this->getSucursales($empresa_id);
+            }catch(Exception $exc){
+                DB::rollBack();
+                return response()->json( ["mensaje" => "Ocurrió un error", "status" => 500],500 );
             }
-            // busca en la tabla direccion para actualizar registros
-            $direccion = Direccion::find($direccion_id);
-            error_log($direccion);
-
-            $direccion->detalles = $camposValidados['detalles'];
-            $direccion->telefono = $camposValidados['telefono'];
-
-            $direccion->save();
-
-            return $this->getSucursal($empresa_id);
         }
 
         public function eliminarSucursal($empresa_id, $direccion_id){
