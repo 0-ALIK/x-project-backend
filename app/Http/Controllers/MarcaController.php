@@ -21,8 +21,7 @@ class MarcaController extends Controller
     }
 
     //agrega una marca
-    public function guardarMarca(Request $request)
-{
+    public function guardarMarca(Request $request){
     // Validar la solicitud
     $request->validate([
         'nombre' => 'required|unique:marca',
@@ -48,8 +47,8 @@ class MarcaController extends Controller
 
         // Devolver una respuesta exitosa
         return response()->json(['message' => 'Marca creada con éxito.'], 201);
-    } catch (\Exception $e) {
-        // Manejar cualquier error y devolver una respuesta de error
+    } catch (Exception $e) {
+        print($e);
         return response()->json(['error' => 'Error al procesar la solicitud.'], 500);
     }
 }
@@ -60,13 +59,11 @@ class MarcaController extends Controller
             $marca = Marca::findOrFail($id_marca);
     
             return response()->json(["data" => $marca, "status" => 200]);
-        } catch (Exception $e) {    
+        } catch (Exception $e) {
             return response()->json(["mensaje" => "Error al obtener la marca", "status" => 500]);
         }
-    }
+    } 
     
-    
-
     //actualiza la informacion de una marca en especifico
     public function updateMarca(Request $request, $id_marca) {
         try {

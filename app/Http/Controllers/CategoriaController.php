@@ -21,35 +21,45 @@ class CategoriaController extends Controller
     }
 
     //agrega una marca
-    public function guardarCategoria(Request $request)
-{
-    // Validar la solicitud
-    $request->validate([
-        'nombre' => 'required|unique:categoria',
-    ]);
+    public function guardarCategoria(Request $request){
+        // Validar la solicitud
+        $request->validate([
+            'nombre' => 'required|unique:categoria',
+        ]);
 
-    try {
-        // Verificar si la categoría ya existe
-        $nombre = $request->input('nombre');
-        $categoriaExistente = Categoria::where('nombre', $nombre)->first();
+        try {
+            // Verificar si la categoría ya existe
+            $nombre = $request->input('nombre');
+            $categoriaExistente = Categoria::where('nombre', $nombre)->first();
 
-        if ($categoriaExistente) {
-            return response()->json(['error' => 'Ya existe una categoría con el mismo nombre.'], 400);
+            if ($categoriaExistente) {
+                return response()->json(['error' => 'Ya existe una categoría con el mismo nombre.'], 400);
+            }
+
+            // Crear una nueva categoría
+            $nuevaCategoria = new Categoria;
+            $nuevaCategoria->nombre = $nombre;
+            $nuevaCategoria->save();
+
+            // Devolver una respuesta exitosa
+            return response()->json(['message' => 'Categoría creada con éxito.'], 201);
+        } catch (Exception $e) {
+            print($e);
+            return response()->json(['error' => 'Error al procesar la solicitud.'], 500);
         }
-
-        // Crear una nueva categoría
-        $nuevaCategoria = new Categoria;
-        $nuevaCategoria->nombre = $nombre;
-        $nuevaCategoria->save();
-
-        // Devolver una respuesta exitosa
-        return response()->json(['message' => 'Categoría creada con éxito.'], 201);
-    } catch (\Exception $e) {
-        // Manejar cualquier error y devolver una respuesta de error
-        return response()->json(['error' => 'Error al procesar la solicitud.'], 500);
     }
-}
 
+    //obtiene una categoria en especifico
+    public function getCategoria($id_categoria) {
+        try {
+            $categoria = Categoria::findOrFail($id_categoria);
+    
+            return response()->json(["data" => $categoria, "status" => 200]);
+        } catch (Exception $e) {
+            print($e);
+            return response()->json(["mensaje" => "Error al obtener la marca", "status" => 500]);
+        }
+    }
 
     //actualiza la informacion de una categoria en especifico
     public function updateCategoria(Request $request, $id_categoria) {

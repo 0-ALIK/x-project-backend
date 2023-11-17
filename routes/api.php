@@ -7,6 +7,7 @@ use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\InventarioController;
+use App\Models\Producto;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +21,7 @@ use App\Http\Controllers\InventarioController;
 */
 #RUTAS MODULO 1
 Route::get('/api/inventario', [InventarioController::class, 'verInventario']);
-Route::post('/api/inventario',[InventarioController::class, 'buscarProductos']);
+Route::post('/api/inventari/{id_producto}',[InventarioController::class, 'buscarProductos']);
 Route::get('/api/marca', [MarcaController::class, 'getAllMarcas']);
 Route::post('/api/marca', [MarcaController::class, 'guardarMarca']);
 Route::get('/api/marca/{id_marca}', [MarcaController::class, 'getMarca']);
@@ -28,10 +29,12 @@ Route::put('/api/marca/{id_marca}', [MarcaController::class, 'updateMarca']);
 Route::delete('/api/marca/{id_marca}', [MarcaController::class, 'deleteMarca']);
 Route::get('/api/categoria', [CategoriaController::class, 'getAllCategorias']);
 Route::post('/api/categoria', [CategoriaController::class, 'guardarCategoria']);
+Route::get('/api/categoria/{id_categoria}', [CategoriaController::class, 'getCategoria']);
 Route::put('/api/categoria/{id_categoria}', [CategoriaController::class, 'updateCategoria']);
 Route::delete('/api/categoria/{id_categoria}', [CategoriaController::class, 'deleteCategoria']);
 Route::get('/api/producto', [ProductoController::class, 'getAllProductos']);
 Route::post('/api/producto', [ProductoController::class, 'guardarProducto']);
+Route::get('/api/producto/{id_producto}', [ProductoController::class, 'getProducto']);
 Route::put('/api/producto/{id_producto}', [ProductoController::class, 'updateProducto']);
 Route::delete('/api/producto/{id_producto}', [ProductoController::class, 'deleteProducto']);
 

@@ -5,27 +5,33 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Producto;
+use Exception;
 
 class InventarioController extends Controller
 {
 
     //muestra todo el inventario
     public function verInventario(Request $request){
-    // Consulta los productos con relaciones cargadas
-    $productos = Producto::join('marca', 'producto.marca_id', '=', 'marca.id_marca')
-    ->join('categoria', 'producto.categoria_id', '=', 'categoria.id_categoria')
-    ->select('categoria.nombre as Categoria', 'marca.nombre as Marca', 'producto.nombre', 'producto.precio_unit', 'producto.cantidad_por_caja', 'producto.foto', 'producto.punto_reorden', 'producto.cantidad_cajas')
-    ->get();
+        // Consulta los productos con relaciones cargadas
+        $productos = Producto::join('marca', 'producto.marca_id', '=', 'marca.id_marca')
+        ->join('categoria', 'producto.categoria_id', '=', 'categoria.id_categoria')
+        ->select('categoria.nombre as Categoria', 'marca.nombre as Marca', 'producto.nombre', 'producto.precio_unit', 'producto.cantidad_por_caja', 'producto.foto', 'producto.punto_reorden', 'producto.cantidad_cajas')
+        ->get();
 
-    if ($productos->isEmpty()) {
-        return response()->json(['message' => 'No hay productos para mostrar.'], 404);
+        if ($productos->isEmpty()) {
+            return response()->json(['message' => 'No hay productos para mostrar.'], 404);
+        }
+
+        return response()->json($productos, 200);
     }
 
-    return response()->json($productos, 200);
-}
-
     //trae un producto en especifico
-    public function buscarProductos(Request $request){
+    public function buscarProductos(Request $request, $nombre){
+        try {
+            
+        } catch (Exception $e) {
+            //throw $th;
+        }
         // Validaciones para los parámetros de búsqueda
         $request->validate([
             'nombre' => 'string',
