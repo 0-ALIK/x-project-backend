@@ -2,9 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ReclamoController as Reclamo;
-use App\Http\Controllers\SugerenciaController as Sugerencia;
-
+use App\Http\Controllers\AdminVentasController;
+use App\Http\Controllers\ClienteCarritoComprasController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -20,18 +19,37 @@ use App\Http\Controllers\SugerenciaController as Sugerencia;
 ########    RUTAS DE RECLAMOS    ##########
 ###########################################
 
-Route::post('/api/reclamo', [Reclamo::class, 'guardarReclamo']);
-Route::get('/api/reclamo',  [Reclamo::class, 'getAllReclamos']);
-Route::get('/api/reclamo/estados',      [Reclamo::class, 'getAllEstados']);
-Route::get('/api/reclamo/categorias',   [Reclamo::class, 'getAllCategorias']);
-Route::get('/api/reclamo/prioridades',  [Reclamo::class, 'getAllPrioridades']);
-Route::get('/api/reclamo/{reclamo_id}',         [Reclamo::class, 'getReclamoById']);
-Route::get('/api/reclamo/cliente/{cliente_id}', [Reclamo::class, 'getReclamosCliente']);
-Route::patch('/api/reclamo/{reclamo_id}/estado',    [Reclamo::class, 'updateEstado']);
-Route::patch('/api/reclamo/{reclamo_id}/prioridad', [Reclamo::class, 'updatePrioridad']);
 
-Route::post('api/sugerencia',   [Sugerencia::class, 'guardarSugerencia']);
-Route::get('api/sugerencia',    [Sugerencia::class, 'getSugerencia']);
+// Rutas para la interfaz de administrador
+Route::group(['prefix' => '/app'], function () {
+    Route::get('/ventas', [AdminVentasController::class, 'index']);  // Página principal de ventas
+    Route::get('/ventas/{id}', [AdminVentasController::class, 'mostrarVenta']); // Página de detalles de venta
+    Route::get('/ordenes', [AdminVentasController::class, 'mostrarOrdenes']); // Página de órdenes
+});
+
+// Rutas para la API de administrador
+Route::group(['prefix' => '/api'], function () {
+    Route::get('/ventas', [AdminVentasController::class, 'getAllVentas']);  // Endpoint para obtener todas las ventas
+    Route::get('/ventas/{id}', [AdminVentasController::class, 'getVentaById']); // Endpoint para obtener detalles de una venta
+    Route::get('/ordenes', [AdminVentasController::class, 'getAllOrdenes']); // Endpoint para obtener todas las órdenes
+});
+
+// Rutas para la interfaz de cliente
+Route::group(['prefix' => '/app'], function () {
+    Route::get('/carrito-compras', [ClienteCarritoComprasController::class, 'mostrarCarrito']); // Página de carrito de compras
+    Route::get('/articulos', [ClienteCarritoComprasController::class, 'mostrarArticulos']); // Página de artículos
+    Route::get('/articulos/vista-articulo/{id}', [ClienteCarritoComprasController::class, 'mostrarVistaArticulo']); // Página de vista de artículo
+    Route::get('/carrito', [ClienteCarritoComprasController::class, 'mostrarCarrito']); // Página de carrito de compras
+    Route::get('/carrito/metodo-seleccionado', [ClienteCarritoComprasController::class, 'mostrarMetodoSeleccionado']); // Página de método de pago seleccionado
+    Route::get('/factura/{id}', [ClienteCarritoComprasController::class, 'mostrarFactura']); // Página de factura
+});
+
+// Rutas para la API de cliente
+Route::group(['prefix' => '/api'], function () {
+    Route::get('/carrito-compras', [ClienteCarritoComprasController::class, 'getCarritoCompras']); // Endpoint para obtener el carrito de compras
+    // ... Añade más rutas para la API de cliente según sea necesario
+});
+
 
 
 
