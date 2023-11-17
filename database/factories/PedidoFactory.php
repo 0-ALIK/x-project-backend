@@ -9,8 +9,6 @@ use App\Models\Pedido;
 // database/factories/PedidoFactory.php
 
 
-git rm ReclamoController
-
 
 class PedidoFactory extends Factory
 {
