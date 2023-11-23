@@ -3,56 +3,62 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminVentasController;
-use App\Http\Controllers\ClienteCarritoComprasController;
+use App\Http\Controllers\CarritoComprasController;
+use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\PagoController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
+| Here is where you can register API routes for your application.
+| These routes are loaded by the RouteServiceProvider and all of them
+| will be assigned to the "api" middleware group. Make something great!
 |
 */
 
-###########################################
-########    RUTAS DE RECLAMOS    ##########
-###########################################
-
-
-// Rutas para la interfaz de administrador
-Route::group(['prefix' => '/app'], function () {
-    Route::get('/ventas', [AdminVentasController::class, 'index']);  // Página principal de ventas
-    Route::get('/ventas/{id}', [AdminVentasController::class, 'mostrarVenta']); // Página de detalles de venta
-    Route::get('/ordenes', [AdminVentasController::class, 'mostrarOrdenes']); // Página de órdenes
-});
-
-// Rutas para la API de administrador
-Route::group(['prefix' => '/api'], function () {
-    Route::get('/ventas', [AdminVentasController::class, 'getAllVentas']);  // Endpoint para obtener todas las ventas
-    Route::get('/ventas/{id}', [AdminVentasController::class, 'getVentaById']); // Endpoint para obtener detalles de una venta
-    Route::get('/ordenes', [AdminVentasController::class, 'getAllOrdenes']); // Endpoint para obtener todas las órdenes
+// Rutas de ventas para el administrador
+Route::group(['prefix' => '/api/admin'], function () {
+    // Rutas para listar pedidos y cambiar el estado de un pedido
+    Route::get('/pedidos', [AdminVentasController::class, 'listarPedidos']);
+    Route::put('/pedidos/{pedidoId}/cambiar-estado', [AdminVentasController::class, 'cambiarEstadoPedido']);
+    // Puedes agregar más rutas según sea necesario
 });
 
 // Rutas para la interfaz de cliente
-Route::group(['prefix' => '/app'], function () {
-    Route::get('/carrito-compras', [ClienteCarritoComprasController::class, 'mostrarCarrito']); // Página de carrito de compras
-    Route::get('/articulos', [ClienteCarritoComprasController::class, 'mostrarArticulos']); // Página de artículos
-    Route::get('/articulos/vista-articulo/{id}', [ClienteCarritoComprasController::class, 'mostrarVistaArticulo']); // Página de vista de artículo
-    Route::get('/carrito', [ClienteCarritoComprasController::class, 'mostrarCarrito']); // Página de carrito de compras
-    Route::get('/carrito/metodo-seleccionado', [ClienteCarritoComprasController::class, 'mostrarMetodoSeleccionado']); // Página de método de pago seleccionado
-    Route::get('/factura/{id}', [ClienteCarritoComprasController::class, 'mostrarFactura']); // Página de factura
-});
-
-// Rutas para la API de cliente
 Route::group(['prefix' => '/api'], function () {
-    Route::get('/carrito-compras', [ClienteCarritoComprasController::class, 'getCarritoCompras']); // Endpoint para obtener el carrito de compras
-    // ... Añade más rutas para la API de cliente según sea necesario
+    // Nuevas rutas del carrito
+    Route::get('/carrito/ver', [CarritoComprasController::class, 'verCarrito']);
+    Route::post('/carrito/agregar/{productoId}', [CarritoComprasController::class, 'agregarAlCarrito']);
+    Route::delete('/carrito/eliminar/{productoId}', [CarritoComprasController::class, 'eliminarDelCarrito']);
+    Route::get('/carrito/pago', [CarritoComprasController::class, 'irAPago']);
+    Route::post('/carrito/pagar', [CarritoComprasController::class, 'procesarPedido']);
+    Route::get('/carrito/factura/{pedidoId}', [CarritoComprasController::class, 'generarFactura']);
 });
 
+// Ruta para obtener todos los productos
+Route::get('/productos', [ProductoController::class, 'index']);
 
+// Ruta para obtener detalles de un producto
+Route::get('/productos/{id}', [ProductoController::class, 'show']);
 
+// Ruta para crear un nuevo producto
+Route::post('/productos', [ProductoController::class, 'store']);
 
+// Ruta para actualizar un producto
+Route::put('/productos/{id}', [ProductoController::class, 'update']);
 
+// Ruta para eliminar un producto
+Route::delete('/productos/{id}', [ProductoController::class, 'destroy']);
 
+// Ruta para obtener detalles de un producto
+Route::get('/producto/detalles/{id}', [ProductoController::class, 'mostrarDetalles']);
 
+// Rutas para el método de pago
+Route::group(['prefix' => '/api/payment'], function () {
+    // Rutas para el controlador de pagos
+    Route::get('/show-page', [PagoController::class, 'showPaymentPage'])->name('payment.page');
+    Route::post('/process-payment/process-payment', [PagoController::class, 'processPayment'])->name('process.payment');
+    // Otras rutas relacionadas con el método de pago
+});

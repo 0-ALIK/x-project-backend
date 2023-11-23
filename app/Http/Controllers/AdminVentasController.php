@@ -5,21 +5,29 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Pedido;
+use App\Models\PedidoEstado;
 
 
 class AdminVentasController extends Controller
 {
-    public function getAllVentas()
+
+    public function listarPedidos()
     {
-        // Obtener la lista de pedidos desde la base de datos
-        $pedidos = Pedido::all();
+        $pedidos = Pedido::with(['cliente', 'estado', 'direccion', 'pagos'])->get();
 
-        // Validar si hay pedidos
-        if ($pedidos->isEmpty()) {
-            return response()->json(['message' => 'No hay pedidos para mostrar.'], 404);
-        }
+        return response()->json(['pedidos' => $pedidos]);
+    }
 
-        // Devolver la vista con los datos
-        return response()->json($pedidos, 200);
+    public function cambiarEstadoPedido(Request $request, $pedidoId)
+    {
+        // Validar y cambiar el estado del pedido
+        $request->validate([
+            'estado_id' => 'required|exists:pedido_estado,id_pedido_estado',
+        ]);
+
+        $pedido = Pedido::findOrFail($pedidoId);
+        $pedido->update(['estado_id' => $request->input('estado_id')]);
+
+        return response()->json(['message' => 'Estado del pedido actualizado con éxito']);
     }
 }
