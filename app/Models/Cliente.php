@@ -9,13 +9,8 @@ class Cliente extends Model
 {
     use HasFactory;
 
-    //declaramos el nombre de la tabla
     protected $table = 'cliente';
-
-    //declaramos el pk
     protected $primaryKey = 'id_cliente';
-
-    //declaramos los campos que se pueden escribir
     protected $fillable = [
         'usuario_id',
         'empresa_id',
@@ -26,21 +21,22 @@ class Cliente extends Model
         'estado'
     ];
 
-    // Relacionamento 1:M empresa - cliente
-    public function Cliente()
+    // Relacionamiento 1:M empresa - cliente
+    public function empresa()
     {
         return $this->belongsTo(Empresa::class, 'empresa_id', 'id_empresa');
     }
 
-    // Relacionamento 1:1 usuario - cliente
-    public function Usuario()
+    // Relacionamiento 1:1 usuario - cliente
+    public function usuario()
     {
-        return $this->belongsTo(usuario::class, 'usuario_id', 'id_usuario');
+        return $this->belongsTo(Usuario::class, 'usuario_id', 'id_usuario');
     }
 
-    // Relacionamento 1:M cliente - direccion
-    public function Cliente_direcciones()
+    // Relacionamiento 1:M cliente - direccion
+    public function clienteDirecciones()
     {
-        return $this->hasMany(Cliente_direcciones::class, 'cliente_id', 'id_cliente');
+        return $this->hasMany(ClienteDirecciones::class, 'cliente_id', 'id_cliente');
     }
 }
+

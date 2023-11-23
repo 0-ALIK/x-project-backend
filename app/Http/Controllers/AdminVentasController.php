@@ -13,7 +13,7 @@ class AdminVentasController extends Controller
 
     public function listarPedidos()
     {
-        $pedidos = Pedido::with(['cliente', 'estado', 'direccion', 'pagos'])->get();
+        $pedidos = Pedido::with(['cliente', 'estado', 'direccion', 'pago'])->get();
 
         return response()->json(['pedidos' => $pedidos]);
     }
@@ -30,4 +30,12 @@ class AdminVentasController extends Controller
 
         return response()->json(['message' => 'Estado del pedido actualizado con éxito']);
     }
+    public function obtenerPago(int $pedidoId)
+    {
+        $pedido = Pedido::findOrFail($pedidoId);
+        $pago = $pedido->pago;
+
+        return $pago;
+    }
+
 }
