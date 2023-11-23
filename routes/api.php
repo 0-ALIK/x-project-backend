@@ -27,7 +27,6 @@ use App\Http\Controllers\ExportsController as Exports;
 Route::get('/api/analitica/reporte/cliente/',  [Dashboard::class, 'getAllClientes']);
 Route::get('/api/analitica/reporte/inventario/',[Dashboard::class, 'getAllProductos']);
 Route::get('/api/analitica/reporte/pedido/',[Dashboard::class, 'getAllPedidos']);
-Route::get('/api/exportar/',[Exports::class, 'exportarCSV']);
 
 
 
