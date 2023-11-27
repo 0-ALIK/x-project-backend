@@ -21,7 +21,7 @@ use App\Models\Producto;
 */
 #RUTAS MODULO 1
 Route::get('/api/inventario', [InventarioController::class, 'verInventario']);
-Route::post('/api/inventari/{id_producto}',[InventarioController::class, 'buscarProductos']);
+Route::post('/api/inventario',[InventarioController::class, 'buscarProductos']);
 Route::get('/api/marca', [MarcaController::class, 'getAllMarcas']);
 Route::post('/api/marca', [MarcaController::class, 'guardarMarca']);
 Route::get('/api/marca/{id_marca}', [MarcaController::class, 'getMarca']);
