@@ -32,6 +32,12 @@ class SolicitudesController extends Controller
 
     public function rechazarSolicitud($id){
         $empresa = Empresa::find($id);
+        $usuario = Usuario::find($empresa->usuario_id);
+        $key = explode('/', pathinfo(parse_url($usuario->foto, PHP_URL_PATH), PATHINFO_DIRNAME));
+        $public_id = end($key) . '/' . pathinfo(parse_url($usuario->foto, PHP_URL_PATH), PATHINFO_FILENAME);
+        //borra la imagen en donde esta almacenada
+        Cloudinary::destroy($public_id);
+
         $empresa->delete();
         return response()->json([
             'message' => 'Empresa rechazada'

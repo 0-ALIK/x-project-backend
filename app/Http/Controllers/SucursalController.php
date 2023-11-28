@@ -37,10 +37,9 @@ class SucursalController extends Controller
         return $sucursales;
         }
 
-        public function guardarSucursal(Request $request){
+        public function guardarSucursal(Request $request, $empresa_id){
             $camposValidados = $request->validate([
                 //para tabla Sucursal (Empresa_direcciones)
-                'empresa_id' => 'required',
                 'nombre' => ['required','min:3'],
                 //para tabla Direccion
                 'provincia_id' => 'required',
@@ -48,7 +47,7 @@ class SucursalController extends Controller
                 'telefono' => ['required','min:3'],
             ]);
             $detalles = $request->input('detalles');
-            $empresa = Empresa::find($camposValidados['empresa_id']);
+            $empresa = Empresa::find($empresa_id);
             PermisoUtil::verificarUsuario($request, $empresa);
             try{
                 DB::beginTransaction();
@@ -63,7 +62,7 @@ class SucursalController extends Controller
                 $Direccion->save();
 
                 $Sucursal = Empresa_direcciones::create([
-                    'empresa_id' => $camposValidados['empresa_id'],
+                    'empresa_id' => $empresa_id,
                     'direccion_id' => $Direccion->id_direccion,
                     'nombre' => $camposValidados['nombre'],
                 ]);
@@ -96,7 +95,7 @@ class SucursalController extends Controller
                 'telefono' => 'required'
             ]);
             $detalles = $request->input('detalles');
-            $empresa = Empresa::find($camposValidados['empresa_id']);
+            $empresa = Empresa::find($empresa_id);
             PermisoUtil::verificarUsuario($request, $empresa);
             try{
                 DB::beginTransaction();
@@ -118,10 +117,10 @@ class SucursalController extends Controller
             }
         }
 
-        public function eliminarSucursal($empresa_id, $direccion_id){
+        public function eliminarSucursal(Request $request,$empresa_id, $direccion_id){
             try{
             // Sucursal es null si no encuentra la sucursal con los id's enviados (tabla Empresa_direcciones)
-            $empresa = Empresa::find($camposValidados['empresa_id']);
+            $empresa = Empresa::find($empresa_id);
             PermisoUtil::verificarUsuario($request, $empresa);
 
             $sucursal = Empresa_direcciones::where('empresa_id', $empresa_id)

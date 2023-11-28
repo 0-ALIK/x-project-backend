@@ -12,6 +12,8 @@ use App\Http\Requests\UpdateEmpresaRequest;
 Use Exception;
 use Illuminate\Support\Facades\DB;
 use App\Utils\PermisoUtil;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Support\Facades\Storage;
 
 class EmpresaController extends Controller
 {
@@ -54,14 +56,19 @@ class EmpresaController extends Controller
             'telefono' => 'required',
             'correo' => ['required', 'email'],
             'pass' => 'required',
-            'documento' => 'required',
+            'documento' => 'required|mimes:pdf|max:10000',
         ]);
+
+        //crea una carpeta con el nombre documento_empresa si no existe
+        if (!Storage::disk('public')->exists('documento_empresa')){
+            Storage::disk('public')->makeDirectory('documento_empresa');
+        }
+        $result = $camposValidados['documento']->storeOnCloudinary('documento_empresa');
 
         //encriptamos la contraseña
         $camposValidados['pass'] = bcrypt($camposValidados['pass']);
         try{
         //creamos el usuario
-
         DB::beginTransaction();
         $usuario = Usuario::create([
             'nombre' => $camposValidados['nombre'],
@@ -78,7 +85,7 @@ class EmpresaController extends Controller
             'usuario_id' => $usuario->id_usuario,
             'razon_social' => $camposValidados['nombre'],
             'ruc' => $camposValidados['ruc'],
-            'documento' => $camposValidados['documento'],
+            'documento' => $result->getSecurePath(),
             'estado' => 'pendiente',
         ]);
 
@@ -100,14 +107,14 @@ class EmpresaController extends Controller
 
     //falta manejo de fotos 
     public function actualizarEmpresa(Request $request, $id){
-        error_log($request->user()->currentAccessToken()->tokenable_id);
+        //error_log($request->user()->currentAccessToken()->tokenable_id);
         //validamos los campos
         $camposValidados = $request->validate([
             'nombre' => ['required', 'min:3'],
             'ruc' => 'required',
             'telefono' => 'required',
             'correo' => ['required', 'email'],
-            'foto' => 'image'
+            'foto' => 'image|mimes:jpeg,png,jpg,svg|max:2048'
         ]);
 
         $empresa = Empresa::find($id);
@@ -115,18 +122,31 @@ class EmpresaController extends Controller
         
         //valida si el usuario que esta actualizando es el mismo que el de la sesion
         PermisoUtil::verificarPermisos($request, $usuario);
+        //borra la foto anterior
+        if($request->hasFile('foto')){
+            $key = explode('/', pathinfo(parse_url($usuario->foto, PHP_URL_PATH), PATHINFO_DIRNAME));
+            $public_id = end($key) . '/' . pathinfo(parse_url($usuario->foto, PHP_URL_PATH), PATHINFO_FILENAME);
+            //borra la imagen en donde esta almacenada
+            Cloudinary::destroy($public_id);
+            } 
+         //crea una carpeta con el nombre foto_empresa si no existe
+        if (!Storage::disk('public')->exists('foto_empresa')){
+            Storage::disk('public')->makeDirectory('foto_empresa');
+        }
+        $result = $camposValidados['foto']->storeOnCloudinary('foto_empresa');    
 
+        db::beginTransaction();
         //actualizamos los datos del usuario de la empresa
         $usuario->nombre = $camposValidados['nombre'];
         $usuario->telefono = $camposValidados['telefono'];
         $usuario->correo = $camposValidados['correo'];
-        $usuario->foto = ''; //aqui va el url de la foto
+        $usuario->foto = $result->getSecurePath();; //aqui va el url de la foto
         $usuario->save();   
         //actualizamos los datos de la empresa
         $empresa->razon_social = $camposValidados['nombre'];
         $empresa->ruc = $camposValidados['ruc'];
         $empresa->save();
-
+        db::commit();
         //error_log($empresa);
         return $this->getEmpresa($id);
     }
@@ -157,6 +177,11 @@ class EmpresaController extends Controller
                 'message' => 'No se puede eliminar la empresa porque tiene clientes'
             ], 400);
         }
+
+        $key = explode('/', pathinfo(parse_url($usuario->foto, PHP_URL_PATH), PATHINFO_DIRNAME));
+        $public_id = end($key) . '/' . pathinfo(parse_url($usuario->foto, PHP_URL_PATH), PATHINFO_FILENAME);
+        //borra la imagen en donde esta almacenada
+        Cloudinary::destroy($public_id);
 
         $empresa->delete();
         $usuario->delete();

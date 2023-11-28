@@ -13,6 +13,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 Use Exception;
 use App\Utils\PermisoUtil;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Support\Facades\Storage;
+
 
 class ClienteController extends Controller
 {
@@ -33,7 +36,7 @@ class ClienteController extends Controller
     }
 
     public function getCliente($id){
-        $clientes = Cliente::select('cliente.id_cliente as id', 'usuario.nombre as nombre', 'usuarioEmpresa.nombre as empresa','cliente.apellido as apellido', 'cliente.cedula', 'cliente.genero','usuario.correo', 'usuario.telefono', 'usuario.foto', 'usuario.detalles',DB::raw('69 as frecuencia'), DB::raw('96 as totalPedidos') ,DB::raw('CONCAT(usuario.nombre, " ", cliente.apellido) as cliente69'))
+        $clientes = Cliente::select('cliente.id_cliente as id', 'usuario.nombre as nombre', 'usuarioEmpresa.nombre as empresa','cliente.apellido as apellido', 'cliente.cedula', 'cliente.genero','usuario.correo', 'usuario.telefono', 'usuario.foto', 'usuario.detalles',DB::raw('69 as frecuencia'), DB::raw('96 as totalPedidos') ,DB::raw('CONCAT(usuario.nombre, " ", cliente.apellido) as cliente'))
         ->join('usuario', 'cliente.usuario_id', '=', 'usuario.id_usuario')
         ->join('empresa', 'empresa.id_empresa', '=', 'cliente.empresa_id')
         ->join('usuario as usuarioEmpresa', 'usuarioEmpresa.id_usuario', '=', 'empresa.usuario_id')
@@ -57,7 +60,7 @@ class ClienteController extends Controller
             'correo' => ['required', 'email'],
             'pass' => 'required',
             'detalles',
-            'foto' =>'image',
+            'foto' =>'image|mimes:jpeg,png,jpg,svg|max:2048',
             'direccion' => 'required',
             'codigoPostal' => 'required',
             'provincia' => 'required',
@@ -66,6 +69,14 @@ class ClienteController extends Controller
 
         try{
         $camposValidados['pass'] = bcrypt($request->input('pass'));
+
+        //crea una carpeta con el nombre foto_empresa si no existe
+        if (!Storage::disk('public')->exists('foto_cliente')){
+            Storage::disk('public')->makeDirectory('foto_cliente');
+        }
+        $result = $camposValidados['foto']->storeOnCloudinary('foto_cliente');
+
+
         //creamos el usuario
         $usuario = Usuario::create([
             'nombre' => $camposValidados['nombre'],
@@ -73,7 +84,7 @@ class ClienteController extends Controller
             'telefono' => $camposValidados['telefono'],
             'pass' => $camposValidados['pass'],
             'rol' => 'cliente',
-            'foto' => '-',
+            'foto' => $result->getSecurePath(),
             'detalles' => 'prueba',
         ]);
         //creamos el cliente
@@ -131,6 +142,23 @@ class ClienteController extends Controller
         //verificamos que el usuario que esta actualizando es el mismo que el de la sesion
         PermisoUtil::verificarPermisos($request, $usuario);
 
+        db::beginTransaction();
+        //borra la foto anterior
+        if($request->hasFile('foto')){
+            $key = explode('/', pathinfo(parse_url($usuario->foto, PHP_URL_PATH), PATHINFO_DIRNAME));
+            $public_id = end($key) . '/' . pathinfo(parse_url($usuario->foto, PHP_URL_PATH), PATHINFO_FILENAME);
+            //borra la imagen en donde esta almacenada
+            Cloudinary::destroy($public_id);
+
+            //sube la nueva foto
+            //crea una carpeta con el nombre foto_empresa si no existe
+            if (!Storage::disk('public')->exists('foto_cliente')){
+                Storage::disk('public')->makeDirectory('foto_cliente');
+            }
+            $result = $camposValidados['foto']->storeOnCloudinary('foto_cliente');
+            $usuario->foto = $result->getSecurePath();
+         } 
+
         $usuario->nombre = $camposValidados['nombre'];
         $usuario->correo = $camposValidados['correo'];
         $usuario->telefono = $camposValidados['telefono'];
@@ -141,7 +169,7 @@ class ClienteController extends Controller
         $cliente->cedula = $camposValidados['cedula'];
         $cliente->genero = $camposValidados['genero'];
         $cliente->save();
-
+        db::commit();
         return $this->getCliente($cliente->id_cliente);
     }
 
@@ -163,6 +191,13 @@ class ClienteController extends Controller
         foreach($direcciones as $direccion){
             error_log($direccion);
             $direccion->delete();
+        }
+
+        if($request->hasFile('foto')){
+            $key = explode('/', pathinfo(parse_url($usuario->foto, PHP_URL_PATH), PATHINFO_DIRNAME));
+            $public_id = end($key) . '/' . pathinfo(parse_url($usuario->foto, PHP_URL_PATH), PATHINFO_FILENAME);
+            //borra la imagen en donde esta almacenada
+            Cloudinary::destroy($public_id);
         }
 
         //eliminamos el cliente
