@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('foto');
             $table->integer('punto_reorden');
             $table->integer('cantidad_caja');
-
             $table->timestamps();
 
             //Foreign Key constraints
