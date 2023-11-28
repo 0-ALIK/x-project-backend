@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class Usuario extends Model
+class Usuario extends Authenticatable
 {
-    use HasFactory;
-
+    use HasApiTokens, HasFactory, Notifiable;
     //declaramos el nombre de la tabla
     protected $table = 'usuario';
 
@@ -33,5 +35,9 @@ class Usuario extends Model
     //relacionamento 1:1 usuario - cliente
     public function Cliente(){
         return $this->hasOne(Cliente::class, 'usuario_id', 'id_usuario');
+    }
+
+    public function getAuthPassword() {
+        return $this->pass;
     }
 }

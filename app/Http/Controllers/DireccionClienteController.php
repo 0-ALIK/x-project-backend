@@ -12,6 +12,7 @@ use App\Http\Requests\UpdateClienteRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 Use Exception;
+use App\Utils\PermisoUtil;
 
 class DireccionClienteController extends controller
 {
@@ -32,6 +33,8 @@ class DireccionClienteController extends controller
             'telefono' => 'required'
         ]);
         $detalles = $request->input('detalles');
+        $cliente = Cliente::find($id);
+        PermisoUtil::verificarUsuario($request, $cliente);
         try{
             DB::beginTransaction();
             $Direccion = Direccion::create([
@@ -64,6 +67,8 @@ class DireccionClienteController extends controller
             'telefono' => 'required'
         ]);
         $detalles = $request->input('detalles');
+        $cliente = Cliente::find($id);
+        PermisoUtil::verificarUsuario($request, $cliente);
         try{
             DB::beginTransaction();
             $Direccion = Direccion::find($id_direccion);
@@ -80,8 +85,11 @@ class DireccionClienteController extends controller
         }
     }
 
-    public function eliminarClienteDireccion($id,$id_direccion){
+    public function eliminarClienteDireccion(Request $request,$id,$id_direccion){
         try{    
+
+            $cliente = Cliente::find($id);
+            PermisoUtil::verificarUsuario($request, $cliente);
             DB::beginTransaction();
             Cliente_direcciones::where('cliente_id', $id)
             ->where('direccion_id', $id_direccion)

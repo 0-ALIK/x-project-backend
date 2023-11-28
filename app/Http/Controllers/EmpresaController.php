@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\UpdateEmpresaRequest;
 Use Exception;
 use Illuminate\Support\Facades\DB;
-
+use App\Utils\PermisoUtil;
 
 class EmpresaController extends Controller
 {
@@ -20,25 +20,19 @@ class EmpresaController extends Controller
      */
 
     //obtiene toda las empresas
+    //FALTA SOLO MOSTRAR CUANDO EL ESTADO ESTE EN APROBADO --- HECHO
     public function getAllEmpresas(Request $request){
         //obtenemos los filtros params
         $clienteId = $request->input('cliente');
-        $nombreEmpresa = $request->input('empresa');
-        $ruc = $request->input('ruc');
-        $correo = $request->input('correo');
-        $telefono = $request->input('telefono');
 
         $query = Empresa::select('empresa.id_empresa as Id', 'usuario.nombre as nombre', 'empresa.razon_social', 'empresa.ruc', 'usuario.correo', 'usuario.telefono', 'empresa.documento', 'usuario.foto')
-        ->join('usuario', 'empresa.usuario_id', '=', 'usuario.id_usuario');
+        ->join('usuario', 'empresa.usuario_id', '=', 'usuario.id_usuario')
+        ->where('empresa.estado', '=', 'aprobado');
 
         //aplicamos los filtros
         $clienteId ? $query->where('cliente.id_cliente', '=', $clienteId)->join('cliente', 'empresa.id_empresa', '=', 'cliente.empresa_id') : null;
-        $nombreEmpresa ? $query->where('empresa.razon_social', 'like', '%'.$nombreEmpresa.'%') : null;
-        $ruc ? $query->where('empresa.ruc', '=', $ruc) : null;
-        $correo ? $query->where('usuario.correo', '=', $correo) : null;
-        $telefono ? $query->where('usuario.telefono', '=', $telefono) : null;
 
-        $empresas = $query->simplePaginate(10);
+        $empresas = $query->simplePaginate(1000);
         return $empresas;
     }
 
@@ -50,7 +44,8 @@ class EmpresaController extends Controller
         return $empresas;
     }
 
-    //FALTA VALIDAR SESION - falta manejo de fotos
+    //FALTA VALIDAR SESION - HECHO
+    //falta manejo de fotos
     public function guardarEmpresa(Request $request){
         //validamos los campos
         $camposValidados = $request->validate([
@@ -89,15 +84,23 @@ class EmpresaController extends Controller
 
         DB::commit();
         //error_log($empresa);
-        return $this->getEmpresa($empresa->id_empresa);
+        return response()->json( 
+        ["mensaje" => "Cuenta creada correctamente", 
+        "token" => $usuario->createToken('authToken',['empresa'])->plainTextToken,
+        "data" => $this->getEmpresa($empresa->id_empresa),
+        "status" => 200,
+        ],200 );
+        
         } catch(Exception $ex){
+            error_log($ex);
             DB::rollBack();
             return response()->json( ["mensaje" => "Ocurrió un error", "status" => 500],500 );
         }
     }
 
-    //FALTA VALIDAR SESION - falta manejo de fotos 
+    //falta manejo de fotos 
     public function actualizarEmpresa(Request $request, $id){
+        error_log($request->user()->currentAccessToken()->tokenable_id);
         //validamos los campos
         $camposValidados = $request->validate([
             'nombre' => ['required', 'min:3'],
@@ -109,6 +112,9 @@ class EmpresaController extends Controller
 
         $empresa = Empresa::find($id);
         $usuario = Usuario::find($empresa->usuario_id);
+        
+        //valida si el usuario que esta actualizando es el mismo que el de la sesion
+        PermisoUtil::verificarPermisos($request, $usuario);
 
         //actualizamos los datos del usuario de la empresa
         $usuario->nombre = $camposValidados['nombre'];
@@ -127,12 +133,16 @@ class EmpresaController extends Controller
 
 
     //FALTA VALIDAR SESION 
-    public function eliminarEmpresa($id){
+    public function eliminarEmpresa(Request $request, $id){
         try{
         $empresa = Empresa::find($id);
         $usuario = Usuario::find($empresa->usuario_id);
         $sucursales =  Empresa_direcciones::where('empresa_id', '=', $id)->get();
         $clientes = Cliente::where('empresa_id', '=', $id)->get();
+
+         //valida si el usuario que esta actualizando es el mismo que el de la sesion
+         PermisoUtil::verificarPermisos($request, $usuario);
+
         //error_log($clientes);
         //verificamos si la empresa tiene sucursales
         if(!sizeof($sucursales) == 0){

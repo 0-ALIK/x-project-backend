@@ -7,6 +7,9 @@ use Exception;
 use Illuminate\Http\Request;
 use App\Models\Empresa_direcciones;
 use Illuminate\Support\Facades\DB;
+use App\Utils\PermisoUtil;
+use App\Models\Empresa;
+
 class SucursalController extends Controller
 {
         public function getSucursales($empresa_id) //Ruta: /api/sucursales/{id}
@@ -45,6 +48,8 @@ class SucursalController extends Controller
                 'telefono' => ['required','min:3'],
             ]);
             $detalles = $request->input('detalles');
+            $empresa = Empresa::find($camposValidados['empresa_id']);
+            PermisoUtil::verificarUsuario($request, $empresa);
             try{
                 DB::beginTransaction();
 
@@ -91,6 +96,8 @@ class SucursalController extends Controller
                 'telefono' => 'required'
             ]);
             $detalles = $request->input('detalles');
+            $empresa = Empresa::find($camposValidados['empresa_id']);
+            PermisoUtil::verificarUsuario($request, $empresa);
             try{
                 DB::beginTransaction();
                 $Direccion = Direccion::find($direccion_id);
@@ -114,6 +121,9 @@ class SucursalController extends Controller
         public function eliminarSucursal($empresa_id, $direccion_id){
             try{
             // Sucursal es null si no encuentra la sucursal con los id's enviados (tabla Empresa_direcciones)
+            $empresa = Empresa::find($camposValidados['empresa_id']);
+            PermisoUtil::verificarUsuario($request, $empresa);
+
             $sucursal = Empresa_direcciones::where('empresa_id', $empresa_id)
             ->where('direccion_id', $direccion_id)
             ->delete();

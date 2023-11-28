@@ -12,36 +12,31 @@ use App\Http\Requests\UpdateClienteRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 Use Exception;
+use App\Utils\PermisoUtil;
 
 class ClienteController extends Controller
 {
     public function getAllClientes(Request $request){
-        $cedula = $request->input('cedula');
-        $cliente = $request->input('cliente');
-        $genero= $request->input('genero');
         $nombreEmpresa = $request->input('empresa');
-        $correo = $request->input('correo');
-        $telefono = $request->input('telefono');
 
         $query = Cliente::select('cliente.id_cliente as id', 'usuario.nombre as nombre', 'usuarioEmpresa.nombre as empresa','cliente.apellido as apellido', 'cliente.cedula', 'cliente.genero','usuario.correo', 'usuario.telefono', 'usuario.foto', DB::raw('69 as frecuencia'), DB::raw('96 as totalPedidos') ,DB::raw('CONCAT(usuario.nombre, " ", cliente.apellido) as cliente69'))
-        ->join('usuario', 'cliente.usuario_id', '=', 'usuario.id_usuario')->join('empresa', 'empresa.id_empresa', '=', 'cliente.empresa_id')->join('usuario as usuarioEmpresa', 'usuarioEmpresa.id_usuario', '=', 'empresa.usuario_id');
+        ->join('usuario', 'cliente.usuario_id', '=', 'usuario.id_usuario')
+        ->join('empresa', 'empresa.id_empresa', '=', 'cliente.empresa_id')
+        ->join('usuario as usuarioEmpresa', 'usuarioEmpresa.id_usuario', '=', 'empresa.usuario_id');
 
         //aplicamos los filtros
-        $cedula ? $query->where('cliente.cedula', '=', $cedula) : null;
-        $genero ? $query->where('cliente.genero', '=', $genero) : null;
-        $cliente ? $query->where(DB::raw('CONCAT(usuario.nombre, " ", cliente.apellido)'), 'LIKE', '%' . $cliente . '%'): null;
         $nombreEmpresa ? $query->where('usuarioEmpresa.nombre', 'like', '%'.$nombreEmpresa.'%') : null;
-        $correo ? $query->where('usuario.correo', 'like', '%'.$correo.'%') : null;
-        $telefono ? $query->where('usuario.telefono', 'like', $telefono.'%') : null;
 
-        $clientes = $query->simplePaginate(10);
+        $clientes = $query->simplePaginate(1000);
 
         return $clientes;
     }
 
     public function getCliente($id){
         $clientes = Cliente::select('cliente.id_cliente as id', 'usuario.nombre as nombre', 'usuarioEmpresa.nombre as empresa','cliente.apellido as apellido', 'cliente.cedula', 'cliente.genero','usuario.correo', 'usuario.telefono', 'usuario.foto', 'usuario.detalles',DB::raw('69 as frecuencia'), DB::raw('96 as totalPedidos') ,DB::raw('CONCAT(usuario.nombre, " ", cliente.apellido) as cliente69'))
-        ->join('usuario', 'cliente.usuario_id', '=', 'usuario.id_usuario')->join('empresa', 'empresa.id_empresa', '=', 'cliente.empresa_id')->join('usuario as usuarioEmpresa', 'usuarioEmpresa.id_usuario', '=', 'empresa.usuario_id')
+        ->join('usuario', 'cliente.usuario_id', '=', 'usuario.id_usuario')
+        ->join('empresa', 'empresa.id_empresa', '=', 'cliente.empresa_id')
+        ->join('usuario as usuarioEmpresa', 'usuarioEmpresa.id_usuario', '=', 'empresa.usuario_id')
         ->where('cliente.id_cliente', '=', $id)
         ->get();
 
@@ -81,12 +76,11 @@ class ClienteController extends Controller
             'foto' => '-',
             'detalles' => 'prueba',
         ]);
-
         //creamos el cliente
-        //falta empresa_id  que viene de la sesion
+        //falta empresa_id  que viene de la sesion - HECHO
         $cliente = Cliente::create([
             'usuario_id' => $usuario->id_usuario,
-            'empresa_id' => 1,
+            'empresa_id' => Empresa::where('usuario_id', '=', $request->user()->currentAccessToken()->tokenable_id)->first()->id_empresa,
             'apellido' => $camposValidados['apellido'],
             'cedula' => $camposValidados['cedula'],
             'genero' => $camposValidados['genero'],
@@ -107,7 +101,13 @@ class ClienteController extends Controller
 
         //confirmamos que todo esta bien
         DB::commit();
-        return Cliente::with('Usuario')->find($cliente->id_cliente);
+        return response()->json( 
+            ["mensaje" => "Cuenta creada correctamente", 
+            "token" => $usuario->createToken('authToken',['cliente'])->plainTextToken,
+            "data" => $this->getCliente($cliente->id_cliente),
+            "status" => 200,
+            ],200 );
+
         }catch(Exception $exc){
             DB::rollBack();
             return response()->json( ["mensaje" => "Ocurrió un error", "status" => 500],500 );
@@ -127,7 +127,10 @@ class ClienteController extends Controller
         
         $cliente = Cliente::find($id);
         $usuario = Usuario::find($cliente->usuario_id);
-        error_log($usuario);
+
+        //verificamos que el usuario que esta actualizando es el mismo que el de la sesion
+        PermisoUtil::verificarPermisos($request, $usuario);
+
         $usuario->nombre = $camposValidados['nombre'];
         $usuario->correo = $camposValidados['correo'];
         $usuario->telefono = $camposValidados['telefono'];
@@ -142,12 +145,20 @@ class ClienteController extends Controller
         return $this->getCliente($cliente->id_cliente);
     }
 
-    public function eliminarCliente($id){
+    public function eliminarCliente(Request $request, $id){
         try{
         $cliente = Cliente::find($id);
         $usuario = Usuario::find($cliente->usuario_id);
         $direcciones = Cliente_direcciones::where('cliente_id', '=', $id)->get();
-
+        $empresa = Empresa::find($cliente->empresa_id);
+        //error_log($empresa);
+        //error_log($request->user()->currentAccessToken()->tokenable);
+        //verificamos que el usuario que esta actualizando es el mismo que el de la sesion o el de la empresa a que pertenece
+        PermisoUtil::verificarAccionCliente($request, $usuario, $empresa);
+        if($request->user()->currentAccessToken()->tokenable->rol == 'empresa' && $request->user()->currentAccessToken()->tokenable_id !== $empresa->usuario_id){
+            return response()->json( ["mensaje" => "No tiene permisos para eliminar este cliente", "status" => 401],401 );
+        }
+       
         //eliminamos las direcciones
         foreach($direcciones as $direccion){
             error_log($direccion);
