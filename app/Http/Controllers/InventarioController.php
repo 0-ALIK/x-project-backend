@@ -14,7 +14,7 @@ class InventarioController extends Controller
     // Consulta los productos con relaciones cargadas
     $productos = Producto::join('marca', 'producto.marca_id', '=', 'marca.id_marca')
     ->join('categoria', 'producto.categoria_id', '=', 'categoria.id_categoria')
-    ->select('categoria.nombre as Categoria', 'marca.nombre as Marca', 'producto.nombre', 'producto.precio_unit', 'producto.cantidad_por_caja', 'producto.foto', 'producto.punto_reorden', 'producto.cantidad_caja')
+    ->select('categoria.nombre as Categoria', 'marca.nombre as Marca', 'producto.id_producto','producto.nombre', 'producto.precio_unit', 'producto.cantidad_por_caja', 'producto.foto', 'producto.punto_reorden', 'producto.cantidad_caja')
     ->get();
 
     if ($productos->isEmpty()) {
@@ -26,12 +26,13 @@ class InventarioController extends Controller
 
     //trae un producto en especifico
     public function buscarProductos(Request $request){
-        // Validaciones para los parámetros de búsqueda
-        $request->validate([
-            'nombre' => 'string',
-            'categoria' => 'integer',
-        ]);
+    // Validaciones para los parámetros de búsqueda
+    $request->validate([
+        'nombre' => 'string',
+        'categoria' => 'integer',
+    ]);
 
+    try {
         // Obtén los parámetros de búsqueda del formulario
         $nombre = $request->input('nombre');
         $categoria = $request->input('categoria');
@@ -49,8 +50,13 @@ class InventarioController extends Controller
 
         $productosFiltrados = $query->get();
 
-        // Devuelve los resultados de la búsqueda a la vista
-        return view('inventario.resultados', ['productos' => $productosFiltrados]);
+        // Devuelve los resultados de la búsqueda como respuesta JSON
+        return response()->json(['productos' => $productosFiltrados], 200);
+    } catch (\Exception $e) {
+        // Manejar cualquier error y devolver una respuesta de error
+        return response()->json(['error' => 'Error al procesar la solicitud.'], 500);
     }
+}
+
 }
 
