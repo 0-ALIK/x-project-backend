@@ -80,7 +80,7 @@ class ProductoController extends Controller
             return response()->json(['message' => 'Producto creado con éxito.'], 201);
         } catch (Exception $e) {
             // Manejar cualquier error y devolver una respuesta de error
-            return response()->json(['error' => "'" . $e . "'"], 500);
+            return response()->json(['error' => 'Error al insertar el producto'], 500);
         }
     }
 
