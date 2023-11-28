@@ -151,7 +151,7 @@ class MarcaController extends Controller
 
             $marca->delete();
 
-            return response()->json(['message' => 'Marca eliminada correctamente']);
+            return response()->json(['message' => 'Marca eliminada correctamente'], 201);
         } catch(Exception $e){
             print($e);
             return response()->json( ["mensaje" => "Error al eliminar la marca", "status" => 404] );
