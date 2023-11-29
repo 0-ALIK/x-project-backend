@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReclamoController as Reclamo;
 use App\Http\Controllers\SugerenciaController as Sugerencia;
+use App\Http\Controllers\ChatController as Chat;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -33,8 +35,6 @@ Route::patch('/api/reclamo/{reclamo_id}/prioridad', [Reclamo::class, 'updatePrio
 Route::post('api/sugerencia',   [Sugerencia::class, 'guardarSugerencia']);
 Route::get('api/sugerencia',    [Sugerencia::class, 'getSugerencia']);
 
-
-
-
-
-
+Route::get('/api/chat/{reclamo_id}', [Chat::class, 'index']);
+Route::post('/api/chat/broadcast',   [Chat::class, 'broadcast']);
+Route::post('/api/chat/receive',     [Chat::class, 'receive']);

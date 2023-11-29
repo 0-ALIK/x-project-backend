@@ -41,11 +41,11 @@ class ReclamoController extends Controller
                 );
             } catch (Exception $e) {
                 print($e);
-                return response()->json( ["mensaje" => "Ocurrió un error", "status" => 500] );
+                return response()->json( ["mensaje" => "Ocurrió un error"], 500 );
             }
-            return response()->json( ["mensaje" => "Reclamo registrado", "status" => 200] );
+            return response()->json( ["mensaje" => "Reclamo registrado"], 200 );
         } else {
-            return response()->json( ["mensaje" => "Ya has registrado un reclamo a este pedido", "status" => 400] );
+            return response()->json( ["mensaje" => "Ya has registrado un reclamo a este pedido"], 400 );
         }
     }
 
