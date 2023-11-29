@@ -15,13 +15,12 @@ return new class extends Migration
             $table->string('cedula')->unique();
             $table->string('apellido');
             $table->char('genero', 1);
+            $table->json('permisos');
 
             $table->timestamps();
 
             // Foreign Keys
             $table->foreign('usuario_id')->references('id_usuario')->on('usuario');
-            $table->foreign('permisos_id')->references('id_permisos')->on('permisos');
-
         });
     }
 

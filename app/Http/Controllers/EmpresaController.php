@@ -27,19 +27,20 @@ class EmpresaController extends Controller
         //obtenemos los filtros params
         $clienteId = $request->input('cliente');
 
-        $query = Empresa::select('empresa.id_empresa as Id', 'usuario.nombre as nombre', 'empresa.razon_social', 'empresa.ruc', 'usuario.correo', 'usuario.telefono', 'empresa.documento', 'usuario.foto')
+        $query = Empresa::select('empresa.id_empresa', 'usuario.nombre as nombre', 'empresa.razon_social', 'empresa.ruc', 'usuario.correo', 'usuario.telefono', 'empresa.documento', 'usuario.foto')
         ->join('usuario', 'empresa.usuario_id', '=', 'usuario.id_usuario')
         ->where('empresa.estado', '=', 'aprobado');
 
         //aplicamos los filtros
         $clienteId ? $query->where('cliente.id_cliente', '=', $clienteId)->join('cliente', 'empresa.id_empresa', '=', 'cliente.empresa_id') : null;
 
-        $empresas = $query->simplePaginate(1000);
+        //$empresas = $query->simplePaginate(1000);
+        $empresas = $query->get();
         return $empresas;
     }
 
     public function getEmpresa($id){
-        $empresas = Empresa::select('empresa.id_empresa as Id', 'usuario.nombre as nombre', 'empresa.razon_social', 'empresa.ruc', 'usuario.correo', 'usuario.telefono', 'empresa.documento', 'usuario.foto')
+        $empresas = Empresa::select('empresa.id_empresa', 'usuario.nombre as nombre', 'empresa.razon_social', 'empresa.ruc', 'usuario.correo', 'usuario.telefono', 'empresa.documento', 'usuario.foto')
         ->join('usuario', 'empresa.usuario_id', '=', 'usuario.id_usuario')
         ->where('empresa.id_empresa', '=', $id)
         ->get();
@@ -178,6 +179,7 @@ class EmpresaController extends Controller
             ], 400);
         }
 
+        //borramos la foto
         $key = explode('/', pathinfo(parse_url($usuario->foto, PHP_URL_PATH), PATHINFO_DIRNAME));
         $public_id = end($key) . '/' . pathinfo(parse_url($usuario->foto, PHP_URL_PATH), PATHINFO_FILENAME);
         //borra la imagen en donde esta almacenada
@@ -190,6 +192,7 @@ class EmpresaController extends Controller
             'message' => 'Empresa eliminada correctamente'
         ], 200);
         } catch(Exception $ex){
+        error_log($ex);
         return response()->json( ["mensaje" => "Ocurrió un error", "status" => 500],500 );
     }
 }

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Empresa;
 use App\Models\Cliente; 
+use App\Models\Admin;
 
 class UsuarioController extends Controller
 {
@@ -21,9 +22,9 @@ class UsuarioController extends Controller
                                                          
         if (Auth::attempt(['correo' => $credentials['correo'], 'password' => $credentials['pass']])) {
             $user = Auth::user();
-            $token = $user->createToken('Personal Access Token',[$user->rol])->plainTextToken;
 
             if($user->rol == 'empresa'){
+                $token = $user->createToken('Personal Access Token',[$user->rol])->plainTextToken;
                 $empresa = Empresa::where('usuario_id', $user->id_usuario)->first();
                 if($empresa->estado == 'pendiente'){
                     return response()->json(['message' => 'Empresa pendiente de aprobación'], 401);
@@ -32,11 +33,18 @@ class UsuarioController extends Controller
             }
 
             if($user->rol == 'cliente'){
+                $token = $user->createToken('Personal Access Token',[$user->rol])->plainTextToken;
                 $cliente = Cliente::where('usuario_id', $user->id_usuario)->first();
                 return response()->json(['token' => $token, 'usuario'=>$user, 'dato_adicional'=>$cliente, 'rol'=>$user->rol] , 200);
             }
 
-            return response()->json(['token' => $token, 'data'=>$user], 200);
+            if($user->rol == 'admin'){
+                $admin = Admin::where('usuario_id', $user->id_usuario)->first();
+                $token = $user->createToken('Personal Access Token',[...$admin->permisos])->plainTextToken;
+                return response()->json(['token' => $token, 'usuario'=>$user, 'dato_adicional'=>$admin, 'rol'=>$user->rol] , 200);
+            }
+
+            return response()->json(['message' => 'Usuario sin rol!!'], 200);
         }
 
         return response()->json(['message' => 'datos incorrectos'], 401);
