@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('marca', function (Blueprint $table) {
-            $table->id('id_marca');
-            $table->string('nombre')->unique();
-            $table->string('descripcion');
-            $table->string('logo');
+        Schema::create('reclamo_categoria', function (Blueprint $table) {
+            $table->id('id_r_categoria');
+            $table->string('categoria')->unique();
             $table->timestamps();
         });
     }
@@ -25,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('marca');
+        Schema::dropIfExists('reclamo_categoria');
     }
 };
