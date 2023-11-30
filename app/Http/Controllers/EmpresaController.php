@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use App\Utils\PermisoUtil;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\SucursalController;
 
 class EmpresaController extends Controller
 {
@@ -26,8 +27,15 @@ class EmpresaController extends Controller
     public function getAllEmpresas(Request $request){
         //obtenemos los filtros params
         $clienteId = $request->input('cliente');
-
-        $query = Empresa::select('empresa.id_empresa', 'usuario.nombre as nombre', 'empresa.razon_social', 'empresa.ruc', 'usuario.correo', 'usuario.telefono', 'empresa.documento', 'usuario.foto')
+        $sucursalesController = new SucursalController();
+        $query = Empresa::select('empresa.id_empresa',
+         'usuario.nombre as nombre', 
+         'empresa.razon_social', 
+         'empresa.ruc', 
+         'usuario.correo', 
+         'usuario.telefono', 
+         'empresa.documento', 
+         'usuario.foto')
         ->join('usuario', 'empresa.usuario_id', '=', 'usuario.id_usuario')
         ->where('empresa.estado', '=', 'aprobado');
 
@@ -36,6 +44,11 @@ class EmpresaController extends Controller
 
         //$empresas = $query->simplePaginate(1000);
         $empresas = $query->get();
+
+        foreach ($empresas as &$empresa) {
+            $empresa->sucursales = $sucursalesController->getSucursales($empresa->id_empresa);
+        }
+
         return $empresas;
     }
 
