@@ -11,6 +11,7 @@ class Cliente extends Model
 
     protected $table = 'cliente';
     protected $primaryKey = 'id_cliente';
+
     protected $fillable = [
         'usuario_id',
         'empresa_id',
@@ -36,7 +37,7 @@ class Cliente extends Model
     // Relacionamiento 1:M cliente - direccion
     public function clienteDirecciones()
     {
-        return $this->hasMany(ClienteDirecciones::class, 'cliente_id', 'id_cliente');
+        return $this->hasMany(Cliente_direcciones::class, 'cliente_id', 'id_cliente');
     }
 }
 

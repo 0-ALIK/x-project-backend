@@ -15,12 +15,19 @@ class Direccion extends Model
         'provincia_id',
         'codigo_postal',
         'telefono',
-        'detalles',
+        'detalles'
     ];
 
-    // Relación con la tabla provincia
-    public function provincia()
-    {
-        return $this->belongsTo(Provincia::class, 'provincia_id');
+    // Relacionamento 1:M provincia - direccion
+    public function Provincia(){
+        return $this->belongsTo(Provincia::class, 'provincia_id', 'id_provincia');
+    }
+
+    public function Empresa_direcciones(){
+        return $this->hasMany(Empresa_direcciones::class, 'direccion_id', 'id_direccion');
+    }
+
+    public function Cliente_direcciones(){
+        return $this->hasMany(Cliente_direcciones::class, 'direccion_id', 'id_direccion');
     }
 }
