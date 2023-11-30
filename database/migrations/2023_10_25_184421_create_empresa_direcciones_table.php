@@ -14,6 +14,7 @@ return new class extends Migration
             $table->unsignedBigInteger('direccion_id');
 
             $table->primary(['empresa_id','direccion_id']); //PK
+            $table->string('nombre'); //nombre de la sucursal
 
             $table->timestamps();
             

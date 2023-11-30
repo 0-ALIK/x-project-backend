@@ -12,7 +12,7 @@ return new class extends Migration
         Schema::create('empresa', function (Blueprint $table) {
             $table->id('id_empresa');
             $table->unsignedBigInteger('usuario_id');
-            $table->unsignedInteger('ruc')->unique();
+            $table->BigInteger('ruc')->unique();
             $table->string('razon_social')->unique();
             $table->string('documento');
             $table->string('estado');
