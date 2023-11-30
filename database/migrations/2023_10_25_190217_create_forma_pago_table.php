@@ -6,20 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    
     public function up(): void
     {
-        Schema::create('marca', function (Blueprint $table) {
-            $table->id('id_marca'); //FK
+        Schema::create('forma_pago', function (Blueprint $table) {
+            $table->id('id_forma_pago');
             $table->string('nombre')->unique();
-            $table->string('descripcion');
-            $table->string('logo'); //URL
-
+            
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('marca');
+        Schema::dropIfExists('forma_pago');
     }
 };

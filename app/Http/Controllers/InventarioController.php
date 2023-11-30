@@ -10,12 +10,18 @@ class InventarioController extends Controller
 {
 
     //muestra todo el inventario
-    public function verInventario(Request $request){
+    public function verInventario(Request $request)
+{
     // Consulta los productos con relaciones cargadas
-    $productos = Producto::join('marca', 'producto.marca_id', '=', 'marca.id_marca')
-    ->join('categoria', 'producto.categoria_id', '=', 'categoria.id_categoria')
-    ->select('categoria.nombre as Categoria', 'marca.nombre as Marca', 'producto.id_producto','producto.nombre', 'producto.precio_unit', 'producto.cantidad_por_caja', 'producto.foto', 'producto.punto_reorden', 'producto.cantidad_caja')
-    ->get();
+    $productos = Producto::with(['marca', 'categoria'])
+        ->join('marca', 'producto.marca_id', '=', 'marca.id_marca')
+        ->join('categoria', 'producto.categoria_id', '=', 'categoria.id_categoria')
+        ->select(
+            'categoria.*', // Todas las columnas de la tabla 'categoria'
+            'marca.*', // Todas las columnas de la tabla 'marca'
+            'producto.*' // Todas las columnas de la tabla 'producto'
+        )
+        ->get();
 
     if ($productos->isEmpty()) {
         return response()->json(['message' => 'No hay productos para mostrar.'], 404);

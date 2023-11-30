@@ -32,7 +32,7 @@ class ProductoController extends Controller
         'cantidad_por_caja' => 'required',
         'foto' => 'required',
         'punto_reorden' => 'required',
-        'cantidad_caja' => 'required',
+        'cantidad_cajas' => 'required',
     ]);
 
     try {
@@ -53,7 +53,7 @@ class ProductoController extends Controller
         $nuevoProducto->cantidad_por_caja = $request->input('cantidad_por_caja');
         $nuevoProducto->foto = $request->input('foto');
         $nuevoProducto->punto_reorden = $request->input('punto_reorden');
-        $nuevoProducto->cantidad_caja = $request->input('cantidad_caja');
+        $nuevoProducto->cantidad_caja = $request->input('cantidad_cajas');
         $nuevoProducto->save();
 
         // Devolver una respuesta exitosa
