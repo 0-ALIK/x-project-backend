@@ -20,7 +20,8 @@ return new class extends Migration
             $table->integer('cantidad_por_caja');
             $table->string('foto');
             $table->integer('punto_reorden');
-            $table->integer('cantidad_caja');
+            $table->integer('cantidad_cajas');
+
             $table->timestamps();
 
             //Foreign Key constraints

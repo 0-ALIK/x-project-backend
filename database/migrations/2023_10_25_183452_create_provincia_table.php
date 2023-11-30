@@ -8,11 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('marca', function (Blueprint $table) {
-            $table->id('id_marca'); //FK
+        Schema::create('provincia', function (Blueprint $table) {
+            $table->id('id_provincia');
             $table->string('nombre')->unique();
-            $table->string('descripcion');
-            $table->string('logo'); //URL
 
             $table->timestamps();
         });
@@ -20,6 +18,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('marca');
+        Schema::dropIfExists('provincia');
     }
 };
