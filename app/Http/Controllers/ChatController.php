@@ -5,10 +5,29 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Events\ChatEvent;
 use App\Models\Mensaje;
+use App\Models\Reclamo;
+
 use Exception;
 
 class ChatController extends Controller
 {
+
+    public function chats(){
+
+        // $openChats = Reclamo::join('mensajes', 'mensajes.reclamo_id', '=', 'reclamo.id_reclamo')
+        //             ->groupBy('reclamo.id_reclamo')
+        //             ->pluck('reclamo.id_reclamo');
+
+        $openChats = Reclamo::join('mensajes as msj', 'msj.reclamo_id', '=', 'reclamo.id_reclamo')
+                    ->join('usuario as cli', 'reclamo.cliente_id', '=', 'cli.id_usuario')
+                    ->groupBy('reclamo.id_reclamo')
+                    ->select('reclamo.id_reclamo', 'cli.nombre', 'reclamo.descripcion')
+                    ->get();
+
+        return response()->json($openChats);
+
+    }
+
     private function userHasAccessToTicket()
     {
         return true;

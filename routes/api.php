@@ -32,9 +32,18 @@ Route::get('/api/reclamo/cliente/{cliente_id}', [Reclamo::class, 'getReclamosCli
 Route::patch('/api/reclamo/{reclamo_id}/prioridad', [Reclamo::class, 'updatePrioridad']);
 Route::patch('/api/reclamo/{reclamo_id}/estado',    [Reclamo::class, 'updateEstado']);
 
+###########################################
+########    RUTAS DE SUGERENCIAS    #######
+###########################################
+
 Route::post('/api/sugerencia',   [Sugerencia::class, 'guardarSugerencia']);
 Route::get('/api/sugerencia',    [Sugerencia::class, 'getSugerencia']);
 
+###########################################
+########        RUTAS DE CHAT    ##########
+###########################################
+
+Route::get('/api/chat', [Chat::class, 'chats']);
 Route::get('/api/chat/{reclamo_id}', [Chat::class, 'index']);
 Route::post('/api/chat/receive',     [Chat::class, 'receive']);
 Route::post('/api/chat/broadcast',   [Chat::class, 'broadcast']);
