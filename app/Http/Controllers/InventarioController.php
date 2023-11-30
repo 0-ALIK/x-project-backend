@@ -10,8 +10,7 @@ class InventarioController extends Controller
 {
 
     //muestra todo el inventario
-    public function verInventario(Request $request)
-{
+    public function verInventario(Request $request){
     // Consulta los productos con relaciones cargadas
     $productos = Producto::with(['marca', 'categoria'])
         ->join('marca', 'producto.marca_id', '=', 'marca.id_marca')
