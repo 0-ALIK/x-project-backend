@@ -33,7 +33,7 @@ class ProductoController extends Controller
             'cantidad_por_caja' => 'required',
             'foto' => 'required|image|mimes:png,jpg',
             'punto_reorden' => 'required',
-            'cantidad_caja' => 'required',
+            'cantidad_cajas' => 'required',
         ]);
 
         try {
@@ -73,7 +73,7 @@ class ProductoController extends Controller
             $nuevoProducto->cantidad_por_caja = $request->input('cantidad_por_caja');
             $nuevoProducto->foto = $result->getSecurePath(); //obtiene la ruta en donde esta almacenado el archivo
             $nuevoProducto->punto_reorden = $request->input('punto_reorden');
-            $nuevoProducto->cantidad_caja = $request->input('cantidad_caja');
+            $nuevoProducto->cantidad_cajas = $request->input('cantidad_cajas');
             $nuevoProducto->save();
 
             // Devolver una respuesta exitosa

@@ -18,7 +18,7 @@ class Producto extends Model
         'cantidad_por_caja',
         'foto',
         'punto_reorden',
-        'cantidad_caja'
+        'cantidad_cajas'
     ];
 
     public function marca()
