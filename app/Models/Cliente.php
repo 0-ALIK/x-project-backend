@@ -22,16 +22,20 @@ class Cliente extends Model
     ];
 
     // Relacionamiento 1:M empresa - cliente
+    // En el modelo Cliente
     public function empresa()
     {
-        return $this->belongsTo(Empresa::class, 'empresa_id', 'id_empresa');
+        return $this->belongsTo(Empresa::class, 'empresa_id', 'id_empresa')->select(['id_empresa', 'ruc','razon_social','documento', 'estado']);
     }
 
+
     // Relacionamiento 1:1 usuario - cliente
+    // En el modelo Cliente
     public function usuario()
     {
-        return $this->belongsTo(Usuario::class, 'usuario_id', 'id_usuario');
+        return $this->belongsTo(Usuario::class, 'usuario_id', 'id_usuario')->select(['id_usuario', 'nombre', 'correo','foto','telefono', 'detalles']);
     }
+
 
     // Relacionamiento 1:M cliente - direccion
     public function clienteDirecciones()

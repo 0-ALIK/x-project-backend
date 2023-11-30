@@ -13,6 +13,7 @@ class Pedido extends Model
     protected $table = 'pedido';
     protected $fillable = [
         'cliente_id',
+        'usuario_id',
         'estado_id',
         'direccion_id',
         'detalles',
@@ -22,8 +23,9 @@ class Pedido extends Model
 
     public function cliente()
     {
-        return $this->belongsTo(Cliente::class, 'cliente_id');
+        return $this->belongsTo(Cliente::class, 'cliente_id')->with('usuario');
     }
+
 
     public function estado()
     {
