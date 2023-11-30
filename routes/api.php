@@ -37,4 +37,4 @@ Route::get('/api/sugerencia',    [Sugerencia::class, 'getSugerencia']);
 
 Route::get('/api/chat/{reclamo_id}', [Chat::class, 'index']);
 Route::post('/api/chat/receive',     [Chat::class, 'receive']);
-Route::post('/api/chat/broadcast',   [Chat::class, 'broadcast'])->middleware();
+Route::post('/api/chat/broadcast',   [Chat::class, 'broadcast']);

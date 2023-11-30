@@ -22,9 +22,8 @@ class ChatController extends Controller
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        // LISTAR TODOS LOS MENSAJES DE UN MISMO RECLAMO
         $chat = Mensaje::where('reclamo_id', $reclamo_id)->get();
-        return response()->json($chat); //CSRF
+        return response()->json($chat);
     }
 
     public function broadcast(Request $request){
@@ -46,11 +45,10 @@ class ChatController extends Controller
             );
 
             broadcast( new ChatEvent( $data ) )->toOthers();
-            return response()->json( $data );
+            return response($data, 200, ['Access-Control-Allow-Origin' => 'http://localhost:4200']);
         }
         catch (Exception $e){
-            print($e);
-            return response()->json( ["mensaje" => "ha ocurrido un problema al enviar el mensaje"], 500);
+            return response($e, 500, ['Access-Control-Allow-Origin' => 'http://localhost:4200']);
         }
     }
 
