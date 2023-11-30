@@ -43,4 +43,3 @@ class Cliente extends Model
         return $this->hasMany(ClienteDirecciones::class, 'cliente_id', 'id_cliente');
     }
 }
-
