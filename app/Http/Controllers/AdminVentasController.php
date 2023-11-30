@@ -13,7 +13,7 @@ class AdminVentasController extends Controller
 
     public function listarPedidos()
     {
-        $pedido = Pedido::with(['cliente', 'estado', 'direccion', 'pago', 'productos'])->get();
+        $pedido = Pedido::with(['cliente', 'estado', 'direccion', 'pago', 'pedido_productos'])->get();
 
         if (!$pedido) {
             return response()->json(['error' => 'Pedido no encontrado'], 404);
