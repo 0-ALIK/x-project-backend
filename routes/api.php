@@ -29,12 +29,12 @@ Route::get('/api/reclamo/categorias',   [Reclamo::class, 'getAllCategorias']);
 Route::get('/api/reclamo/prioridades',  [Reclamo::class, 'getAllPrioridades']);
 Route::get('/api/reclamo/{reclamo_id}',         [Reclamo::class, 'getReclamoById']);
 Route::get('/api/reclamo/cliente/{cliente_id}', [Reclamo::class, 'getReclamosCliente']);
-Route::patch('/api/reclamo/{reclamo_id}/estado',    [Reclamo::class, 'updateEstado']);
 Route::patch('/api/reclamo/{reclamo_id}/prioridad', [Reclamo::class, 'updatePrioridad']);
+Route::patch('/api/reclamo/{reclamo_id}/estado',    [Reclamo::class, 'updateEstado']);
 
-Route::post('api/sugerencia',   [Sugerencia::class, 'guardarSugerencia']);
-Route::get('api/sugerencia',    [Sugerencia::class, 'getSugerencia']);
+Route::post('/api/sugerencia',   [Sugerencia::class, 'guardarSugerencia']);
+Route::get('/api/sugerencia',    [Sugerencia::class, 'getSugerencia']);
 
 Route::get('/api/chat/{reclamo_id}', [Chat::class, 'index']);
-Route::post('/api/chat/broadcast',   [Chat::class, 'broadcast']);
 Route::post('/api/chat/receive',     [Chat::class, 'receive']);
+Route::post('/api/chat/broadcast',   [Chat::class, 'broadcast'])->middleware();
