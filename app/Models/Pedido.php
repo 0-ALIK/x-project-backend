@@ -37,7 +37,7 @@ class Pedido extends Model
 
     public function pago()
     {
-        return $this->hasOne(Pago::class, 'pedido_id', 'id_pago');
+        return $this->hasMany(Pago::class, 'pedido_id', 'id_pedido');
     }
 
 
@@ -49,4 +49,5 @@ class Pedido extends Model
 
         return null;
     }
+
 }

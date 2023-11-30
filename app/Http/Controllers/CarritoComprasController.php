@@ -113,7 +113,7 @@ class CarritoComprasController extends Controller
             'pedido_id' => 'required|exists:pedido,id_pedido',
             'monto' => 'required|numeric',
             'forma_pago_id' => 'required|exists:forma_pago,id_forma_pago',
-            // Agrega más validaciones según sea necesario
+            // Agregar más validaciones según sea necesario
         ]);
 
         // Obtener el pedido actual

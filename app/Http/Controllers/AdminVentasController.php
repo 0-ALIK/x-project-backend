@@ -13,11 +13,14 @@ class AdminVentasController extends Controller
 
     public function listarPedidos()
     {
-        $pedidos = Pedido::with(['cliente', 'estado', 'direccion', 'pago'])->get();
+        $pedido = Pedido::with(['cliente', 'estado', 'direccion', 'pago'])->get();
 
-        return response()->json(['pedidos' => $pedidos]);
+        if (!$pedido) {
+            return response()->json(['error' => 'Pedido no encontrado'], 404);
+        }
+
+        return response()->json($pedido);
     }
-
     public function cambiarEstadoPedido(Request $request, $pedidoId)
     {
         // Validar y cambiar el estado del pedido
@@ -38,4 +41,14 @@ class AdminVentasController extends Controller
         return $pago;
     }
 
+    public function obtenerPedidoConPago($pedidoId)
+    {
+        $pedido = Pedido::with(['cliente', 'estado', 'direccion', 'pago'])->find($pedidoId);
+
+        if (!$pedido) {
+            return response()->json(['error' => 'Pedido no encontrado'], 404);
+        }
+
+        return response()->json($pedido);
+    }
 }

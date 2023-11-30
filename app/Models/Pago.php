@@ -31,5 +31,13 @@ class Pago extends Model
     {
         return $this->belongsTo(FormaPago::class, 'forma_pago_id', 'id_forma_pago');
     }
+    public function montoTotalPendiente()
+    {
+        // Calcula el monto total pendiente restando la suma de los pagos actuales
+        $montoTotalPagado = $this->pago()->sum('monto');
+        $montoTotalPendiente = $this->montoTotal() - $montoTotalPagado;
+
+        return max(0, $montoTotalPendiente); // Asegura que el monto pendiente no sea negativo
+    }
 }
 

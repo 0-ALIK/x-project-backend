@@ -23,6 +23,15 @@ Route::group(['prefix' => '/api/admin'], function () {
     // Rutas para listar pedidos y cambiar el estado de un pedido
     Route::get('/pedidos', [AdminVentasController::class, 'listarPedidos']);
     Route::put('/pedidos/{pedidoId}/cambiar-estado', [AdminVentasController::class, 'cambiarEstadoPedido']);
+    Route::get('/pedidos/{pedidoId}', [AdminVentasController::class, 'obtenerPedidoConPago']);
+    // Puedes agregar más rutas según sea necesario
+});
+
+// Rutas de ventas para el administrador
+Route::group(['prefix' => '/api/admin'], function () {
+    // Rutas para listar pedidos y cambiar el estado de un pedido
+    Route::get('/pagos', [PagoController::class, 'listarPagos']);
+    Route::put('/pagos/{pedidoId}', [PagoController::class, 'registrarPago']);
     // Puedes agregar más rutas según sea necesario
 });
 
