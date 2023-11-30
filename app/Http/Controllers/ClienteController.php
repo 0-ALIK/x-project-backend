@@ -15,11 +15,12 @@ Use Exception;
 use App\Utils\PermisoUtil;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Support\Facades\Storage;
-
+use App\Http\Controllers\DireccionClienteController;
 
 class ClienteController extends Controller
 {
     public function getAllClientes(Request $request){
+        $clDirecciones = new DireccionClienteController();
         $nombreEmpresa = $request->input('empresa');
         try{
         $query = Cliente::select('cliente.id_cliente', 'usuario.nombre as nombre', 'usuarioEmpresa.nombre as empresa','empresa.id_empresa','cliente.apellido as apellido', 'cliente.cedula', 'cliente.genero','usuario.correo', 'usuario.telefono', 'usuario.foto', DB::raw('69 as frecuencia'), DB::raw('96 as totalPedidos') ,DB::raw('CONCAT(usuario.nombre, " ", cliente.apellido) as cliente69'))
@@ -37,6 +38,11 @@ class ClienteController extends Controller
 
         //$clientes = $query->simplePaginate(1000);
         $clientes = $query->get();
+
+        foreach($clientes as &$cliente){
+            $cliente->direcciones = $clDirecciones->getClienteDirecciones($cliente->id_cliente);
+        }
+
         return $clientes;
         }catch(Exception $exc){
             error_log($exc);
