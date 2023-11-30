@@ -39,6 +39,10 @@ class Pedido extends Model
     {
         return $this->hasMany(Pago::class, 'pedido_id', 'id_pedido');
     }
+    public function productos()
+    {
+        return $this->hasMany(PedidoProducto::class, 'pedido_id', 'id_pedido')->with('producto');
+    }
 
 
     public function empresa()
