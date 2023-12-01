@@ -26,7 +26,7 @@ class Cliente extends Model
     // En el modelo Cliente
     public function empresa()
     {
-        return $this->belongsTo(Empresa::class, 'empresa_id', 'id_empresa')->select(['id_empresa', 'ruc','razon_social','documento', 'estado']);
+        return $this->belongsTo(Empresa::class, 'empresa_id', 'id_empresa')->select(['usuario_id', 'id_empresa', 'ruc','razon_social','documento', 'estado']);
     }
 
 

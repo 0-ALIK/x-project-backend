@@ -26,29 +26,22 @@ class AdminVentasController extends Controller{
         }
 
         $pedidos = $pedidos->map(function ($pedido) {
-            $pedido->cedula = $pedido->cliente->cedula;
-            $pedido->apellido = $pedido->cliente->apellido;
-            $pedido->genero = $pedido->cliente->genero;
             $pedido->id_empresa = $pedido->cliente->empresa->id_empresa;
 
-            // Moviendo los atributos de usuario al objeto cliente
             $pedido->cliente->nombre = $pedido->cliente->usuario->nombre;
             $pedido->cliente->correo = $pedido->cliente->usuario->correo;
             $pedido->cliente->foto = $pedido->cliente->usuario->foto;
             $pedido->cliente->telefono = $pedido->cliente->usuario->telefono;
             $pedido->cliente->detalles = $pedido->cliente->usuario->detalles;
 
-            // Moviendo los atributos de usuario y cliente al objeto empresa
-            $pedido->cliente->empresa->cedula = $pedido->cliente->cedula;
-            $pedido->cliente->empresa->apellido = $pedido->cliente->apellido;
-            $pedido->cliente->empresa->genero = $pedido->cliente->genero;
-            $pedido->cliente->empresa->estado = $pedido->cliente->estado;
-            $pedido->cliente->empresa->nombre = $pedido->cliente->usuario->nombre;
-            $pedido->cliente->empresa->correo = $pedido->cliente->usuario->correo;
-            $pedido->cliente->empresa->foto = $pedido->cliente->usuario->foto;
-            $pedido->cliente->empresa->telefono = $pedido->cliente->usuario->telefono;
-            $pedido->cliente->empresa->detalles = $pedido->cliente->usuario->detalles;
+            $pedido->cliente->empresa->nombre = $pedido->cliente->empresa->usuario->nombre;
+            $pedido->cliente->empresa->correo = $pedido->cliente->empresa->usuario->correo;
+            $pedido->cliente->empresa->foto = $pedido->cliente->empresa->usuario->foto;
+            $pedido->cliente->empresa->telefono = $pedido->cliente->empresa->usuario->telefono;
+            $pedido->cliente->empresa->detalles = $pedido->cliente->empresa->usuario->detalles;
+
             unset($pedido->cliente->usuario); // Eliminando el objeto usuario
+            unset($pedido->cliente->empresa->usuario);
             return $pedido;
         });
 
@@ -87,29 +80,31 @@ class AdminVentasController extends Controller{
         return response()->json($pedido);
     }
     public function agregarPedido(Request $request)
-    {/*
+    {
         // Autenticación - obteniendo el id del cliente a través del token
-        $cliente_id = $request->user()->id;
+        // 5|HkIWvj3cygG8kW3IAojLoaQn7azaoC3d7PTbDm0Kf4894e77
+        $cliente_id = 1;
 
         // Validar los datos entrantes
         $request->validate([
-            'direccion_id' => 'required|exists:direcciones,id',
-            'detalle' => 'required|string',
+            'direccion_id' => 'required|exists:direccion,id_direccion',
+            'detalles' => 'required|string',
             'pedido_productos' => 'required|array',
-            'pedido_productos.*.id' => 'required|exists:productos,id',
+            'pedido_productos.*.producto_id' => 'required|exists:producto,id_producto',
             'pedido_productos.*.cantidad' => 'required|integer|min:1'
         ]);
 
         // Obtener un 'estado en proceso' desde la base de datos para configurar de forma predeterminada
-        $estado_id = PedidoEstado::where('nombre', '=', 'en proceso')->first()->id;
+        $estado_id = PedidoEstado::where('nombre', '=', 'Proceso')->first()->id_pedido_estado;
 
         // Crear un nuevo pedido
         $pedido = new Pedido([
             'cliente_id' => $cliente_id,
             'estado_id' => $estado_id,
             'direccion_id' => $request->input('direccion_id'),
-            'detalle' => $request->input('detalle'),
-            'fecha' => now() // La fecha se genera automáticamente
+            'detalles' => $request->input('detalles'),
+            'fecha' => now(),
+            'fecha_cambio_estado' => now()
         ]);
 
         // Guardar el pedido
@@ -118,12 +113,11 @@ class AdminVentasController extends Controller{
         // Agregar productos al pedido
         foreach($request->pedido_productos as $producto) {
             PedidoProducto::create([
-                'producto_id' => $producto['id'],
-                'pedido_id' => $pedido->id,
+                'producto_id' => $producto['producto_id'],
+                'pedido_id' => $pedido->id_pedido,
                 'cantidad' => $producto['cantidad']
             ]);
         }
         return response()->json(['message' => 'Pedido creado con éxito', 'data' => $pedido]);
-    */
     }
 }
