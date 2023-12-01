@@ -23,19 +23,18 @@ class ProductoController extends Controller
     }
 
     //agrega un nuevo producto
-    public function guardarProducto(Request $request)
-{
-    // Validar la solicitud
-    $request->validate([
-        'marca_id' => 'required',
-        'categoria_id' => 'required',
-        'nombre' => 'required|unique:producto',
-        'precio_unit' => 'required',
-        'cantidad_por_caja' => 'required',
-        'foto' => 'required',
-        'punto_reorden' => 'required',
-        'cantidad_cajas' => 'required'
-    ]);
+    public function guardarProducto(Request $request){
+        // Validar la solicitud
+        $request->validate([
+            'marca_id' => 'required',
+            'categoria_id' => 'required',
+            'nombre' => 'required|unique:producto',
+            'precio_unit' => 'required',
+            'cantidad_por_caja' => 'required',
+            'foto' => 'required|image|mimes:png,jpg',
+            'punto_reorden' => 'required',
+            'cantidad_cajas' => 'required',
+        ]);
 
         try {
             // Validación para comprobar si ya existe un producto con el mismo nombre
@@ -65,17 +64,17 @@ class ProductoController extends Controller
             // almacena el archivo en la carpeta 'producto_foto'
             $result = $request->file('foto')->storeOnCloudinary('producto_foto');
 
-        // Crear un nuevo producto
-        $nuevoProducto = new Producto;
-        $nuevoProducto->marca_id = $request->input('marca_id');
-        $nuevoProducto->categoria_id = $request->input('categoria_id');
-        $nuevoProducto->nombre = $nombre;
-        $nuevoProducto->precio_unit = $request->input('precio_unit');
-        $nuevoProducto->cantidad_por_caja = $request->input('cantidad_por_caja');
-        $nuevoProducto->foto = $request->input('foto');
-        $nuevoProducto->punto_reorden = $request->input('punto_reorden');
-        $nuevoProducto->cantidad_caja = $request->input('cantidad_cajas');
-        $nuevoProducto->save();
+            // Crear un nuevo producto
+            $nuevoProducto = new Producto;
+            $nuevoProducto->marca_id = $request->input('marca_id');
+            $nuevoProducto->categoria_id = $request->input('categoria_id');
+            $nuevoProducto->nombre = $nombre;
+            $nuevoProducto->precio_unit = $request->input('precio_unit');
+            $nuevoProducto->cantidad_por_caja = $request->input('cantidad_por_caja');
+            $nuevoProducto->foto = $result->getSecurePath(); //obtiene la ruta en donde esta almacenado el archivo
+            $nuevoProducto->punto_reorden = $request->input('punto_reorden');
+            $nuevoProducto->cantidad_cajas = $request->input('cantidad_cajas');
+            $nuevoProducto->save();
 
             // Devolver una respuesta exitosa
             return response()->json(['message' => 'Producto creado con éxito.'], 201);
