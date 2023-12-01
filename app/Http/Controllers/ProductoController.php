@@ -88,7 +88,16 @@ class ProductoController extends Controller
      //obtiene una producto en especifico
      public function getProducto($id_producto) {
         try {
-            $producto = Producto::findOrFail($id_producto);
+            $producto = Producto::with(['marca', 'categoria'])
+            ->join('marca', 'producto.marca_id', '=', 'marca.id_marca')
+            ->join('categoria', 'producto.categoria_id', '=', 'categoria.id_categoria')
+            ->select(
+                'categoria.nombre as Categoria', // Trae el nombre de la categoría
+                'marca.nombre as Marca', // Trae el nombre de la marca
+                'producto.*' // Todas las columnas de la tabla 'producto'
+            )
+            ->where('producto.id_producto', $id_producto) // Aquí debes reemplazar $id_producto con el ID del producto que deseas obtener
+            ->first();
 
             return response()->json(["data" => $producto, "status" => 200]);
         } catch (Exception $e) {
@@ -119,8 +128,6 @@ class ProductoController extends Controller
             //verifica que la nueva marca no este en la bd
             if (Producto::where('nombre', $request->input('nombre'))->first()) {
                 return response()->json(['error' => 'Ya existe una marca con el mismo nombre.'], 400);
-            } else {
-                $producto->nombre = $request->input('nombre');
             }
         }
 

@@ -108,8 +108,6 @@ class MarcaController extends Controller
                 //verifica que la nueva marca no este en la bd
                 if (Marca::where('nombre', $request->input('nombre'))->first()) {
                     return response()->json(['error' => 'Ya existe una marca con el mismo nombre.'], 400);
-                } else {
-                    $marca->nombre = $request->input('nombre');
                 }
             }
 
