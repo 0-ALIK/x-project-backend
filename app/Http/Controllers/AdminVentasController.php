@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Pedido;
 use App\Models\PedidoEstado;
+use App\Models\PedidoProducto;
 
 
 class AdminVentasController extends Controller{
@@ -84,5 +85,45 @@ class AdminVentasController extends Controller{
         }
 
         return response()->json($pedido);
+    }
+    public function agregarPedido(Request $request)
+    {/*
+        // Autenticación - obteniendo el id del cliente a través del token
+        $cliente_id = $request->user()->id;
+
+        // Validar los datos entrantes
+        $request->validate([
+            'direccion_id' => 'required|exists:direcciones,id',
+            'detalle' => 'required|string',
+            'pedido_productos' => 'required|array',
+            'pedido_productos.*.id' => 'required|exists:productos,id',
+            'pedido_productos.*.cantidad' => 'required|integer|min:1'
+        ]);
+
+        // Obtener un 'estado en proceso' desde la base de datos para configurar de forma predeterminada
+        $estado_id = PedidoEstado::where('nombre', '=', 'en proceso')->first()->id;
+
+        // Crear un nuevo pedido
+        $pedido = new Pedido([
+            'cliente_id' => $cliente_id,
+            'estado_id' => $estado_id,
+            'direccion_id' => $request->input('direccion_id'),
+            'detalle' => $request->input('detalle'),
+            'fecha' => now() // La fecha se genera automáticamente
+        ]);
+
+        // Guardar el pedido
+        $pedido->save();
+
+        // Agregar productos al pedido
+        foreach($request->pedido_productos as $producto) {
+            PedidoProducto::create([
+                'producto_id' => $producto['id'],
+                'pedido_id' => $pedido->id,
+                'cantidad' => $producto['cantidad']
+            ]);
+        }
+        return response()->json(['message' => 'Pedido creado con éxito', 'data' => $pedido]);
+    */
     }
 }

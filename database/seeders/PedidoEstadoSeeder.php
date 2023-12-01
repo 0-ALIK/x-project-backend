@@ -11,10 +11,15 @@ class PedidoEstadoSeeder extends Seeder
 {
     public function run()
     {
-        // Crea algunos estados ficticios
-        PedidoEstado::create(['nombre' => 'Estado 1']);
-        PedidoEstado::create(['nombre' => 'Estado 2']);
-        PedidoEstado::create(['nombre' => 'Estado 3']);
+        // Puedes ajustar los nombres de los estados según tus necesidades
+        $estados = [
+            ['nombre' => 'Proceso'],
+            ['nombre' => 'Enviado'],
+            ['nombre' => 'Recibido'],
+            // Agrega más estados según sea necesario
+        ];
+
+        PedidoEstado::insert($estados);
     }
 }
 
