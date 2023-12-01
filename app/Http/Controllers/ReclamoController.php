@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Reclamo;
-use App\Models\Categoria;
+use App\Models\RCategoria;
 use App\Models\Estado;
 use App\Models\Prioridad;
 
@@ -142,7 +142,7 @@ class ReclamoController extends Controller
 
     public function getAllCategorias() {
         try {
-            $categorias = Categoria::all();
+            $categorias = RCategoria::all();
             return response()->json( ["data" => $categorias, "status" => 200] );
 
         } catch(Exception $e){
@@ -172,6 +172,4 @@ class ReclamoController extends Controller
             return response()->json( ["mensaje" => "Ocurrió un problema al buscar los estados", "status" => 404] );
         }
     }
-
-    
 }

@@ -74,6 +74,7 @@ Route::delete('/api/sucursales/{empresa_id}/{direccion_id}', [Sucursal::class, '
 ###########################################
 ########    RUTAS DE SOLICITUDES   ########
 ###########################################
+
 Route::get('/api/solicitudes',  [Solicitudes::class, 'getAllSolicitudes'])->middleware(['auth:sanctum', 'ability:admin,admin_clientes']);
 
 Route::put('/api/solicitudes/{id}',  [Solicitudes::class, 'actualizarSolicitud'])->middleware(['auth:sanctum', 'ability:admin,admin_clientes']);
@@ -155,3 +156,12 @@ Route::get('/api/chat', [Chat::class, 'chats']);
 Route::get('/api/chat/{reclamo_id}', [Chat::class, 'index']);
 Route::post('/api/chat/receive',     [Chat::class, 'receive']);
 Route::post('/api/chat/broadcast',   [Chat::class, 'broadcast']);
+
+
+
+
+
+// SELECT rc.id_reclamo, cli.nombre, rc.descripcion FROM reclamo AS rc
+// JOIN mensajes AS msj ON msj.reclamo_id = rc.id_reclamo
+// JOIN usuario AS cli ON rc.cliente_id = cli.id_usuario
+// GROUP BY rc.id_reclamo
