@@ -21,11 +21,14 @@ class ReclamoController extends Controller
             // Dependiendo de la categoria cambia la prioridad (Sujeto a cambio)
             switch($request['categoria']){
                 case 1:
-                    $prio = 2;
+                    $prio = 1;
+                    break;
                 case 2:
-                    $prio = 3;
+                    $prio = 2;
+                    break;
                 case 3:
                     $prio = 3;
+                    break;
             }
             // Hacemos el insert a la base de datos con los datos que nos llegaron del reclamo
             try {
@@ -36,50 +39,93 @@ class ReclamoController extends Controller
                         'categoria_id'  => $request['categoria'],
                         'descripcion'   => $request['descripcion'],
                         'evidencia'     => $request['evidencia'],
-                        'prioridad_id'  => $prio
+                        'prioridad_id'  => $prio,
+                        'estado_id'     => 1
                     ]
                 );
             } catch (Exception $e) {
                 print($e);
-                return response()->json( ["mensaje" => "Ocurrió un error"], 500 );
+                return response()->json( ["mensaje" => "Ocurrió un error"], 500, ['Access-Control-Allow-Origin' => 'http://localhost:4200'] );
             }
-            return response()->json( ["mensaje" => "Reclamo registrado"], 200 );
+            return response()->json( ["mensaje" => "Reclamo registrado"], 200, ['Access-Control-Allow-Origin' => 'http://localhost:4200'] );
         } else {
-            return response()->json( ["mensaje" => "Ya has registrado un reclamo a este pedido"], 400 );
+            return response()->json( ["mensaje" => "Ya has registrado un reclamo a este pedido"], 400, ['Access-Control-Allow-Origin' => 'http://localhost:4200'] );
         }
     }
 
     public function getAllReclamos() {
         try {
-            $reclamos = Reclamo::all();
-            return response()->json( ["data" => $reclamos, "status" => 200] );
-
+            $reclamos = Reclamo::with('cliente:id_cliente,usuario_id')->get();
+    
+            if ($reclamos->isEmpty()) {
+                return response()->json(["mensaje" => "No hay reclamos disponibles"], 404);
+            }
+    
+            $formattedReclamos = $reclamos->map(function ($reclamo) {
+                return [
+                    'id_reclamo' => $reclamo->id_reclamo,
+                    'cliente_id' => $reclamo->cliente_id,
+                    'usuario_nombre' => $reclamo->cliente->usuario->nombre,
+                    'descripcion' => $reclamo->descripcion,
+                    'fecha' => $reclamo->created_at,
+                ];
+            });
+    
+            return response()->json(["data" => $formattedReclamos], 200);
         } catch(Exception $e){
             print($e);
-            return response()->json( ["mensaje" => "Ocurrió un problema al buscar los reclamos", "status" => 404] );
+            return response()->json(["mensaje" => "Ocurrió un problema al buscar los reclamos"], 500);
         }
     }
 
     // Retorna los reclamos de un cliente en especifico
     public function getReclamosCliente($cliente_id) {
-        $reclamos = Reclamo::where('cliente_id', $cliente_id)->get();
-
-        if (!$reclamos) {
-            return response()->json(["mensaje" => "Cliente no existe", "status" => 400]);
+        try {
+            $reclamos = Reclamo::with('cliente:id_cliente,usuario_id')->where('cliente_id', $cliente_id)->get();
+    
+            if ($reclamos->isEmpty()) {
+                return response()->json(["mensaje" => "Cliente no tiene reclamos"], 404);
+            }
+    
+            $formattedReclamos = $reclamos->map(function ($reclamo) {
+                return [
+                    'id_reclamo' => $reclamo->id_reclamo,
+                    'cliente_id' => $reclamo->cliente_id,
+                    'usuario_nombre' => $reclamo->cliente->usuario->nombre,
+                    'descripcion' => $reclamo->descripcion,
+                    'fecha' => $reclamo->created_at,
+                ];
+            });
+    
+            return response()->json(["data" => $formattedReclamos], 200);
+        } catch(Exception $e){
+            print($e);
+            return response()->json(["mensaje" => "Ocurrió un problema al buscar los reclamos"], 500);
         }
-
-        return response()->json(["data" => $reclamos, "status" => 200]);
     }
 
     // Retorna un reclamo en especifico
     public function getReclamoById($reclamo_id) {
-        $reclamo = Reclamo::find($reclamo_id);
-
-        if (!$reclamo) {
-            return response()->json(["mensaje" => "Reclamo no existe", "status" => 400]);
+        try {
+            $reclamo = Reclamo::with('cliente:id_cliente,usuario_id')->find($reclamo_id);
+    
+            if (!$reclamo) {
+                return response()->json(["mensaje" => "Reclamo no existe"], 404);
+            }
+    
+            $formattedReclamo = [
+                'id_reclamo' => $reclamo->id_reclamo,
+                'cliente_id' => $reclamo->cliente_id,
+                'usuario_nombre' => $reclamo->cliente->usuario->nombre,
+                'descripcion' => $reclamo->descripcion,
+                'fecha' => $reclamo->created_at,
+            ];
+    
+            return response()->json(["data" => $formattedReclamo], 200);
+        } catch (\Exception $e) {
+            print($e);
+            return response()->json(["mensaje" => "Ocurrió un problema al buscar el reclamo"], 500);
         }
-
-        return response()->json(["data" => $reclamo, "status" => 200]);
     }
 
     // Actualiza la prioridad del reclamo
@@ -89,15 +135,15 @@ class ReclamoController extends Controller
 
         if (!$prioridad_id || ($prioridad_id < 1 && $prioridad_id > 3)) {
             print($prioridad_id);
-            return response()->json(["mensaje" => "Parametro PRIORIDAD incorrecto", "status" => 400]);
+            return response()->json(["mensaje" => "Parametro PRIORIDAD incorrecto"], 400, ['Access-Control-Allow-Origin' => 'http://localhost:4200']);
         }
 
         if (!$reclamo) {
-            return response()->json(["mensaje" => "Reclamo no encontrado", "status" => 400]);
+            return response()->json(["mensaje" => "Reclamo no encontrado"], 400, ['Access-Control-Allow-Origin' => 'http://localhost:4200']);
         }
 
         if ($reclamo->estado == 3) {
-            return response()->json(["mensaje" => "Reclamo ha sido resuelto", "status" => 400]);;
+            return response()->json(["mensaje" => "Reclamo ha sido resuelto"], 400, ['Access-Control-Allow-Origin' => 'http://localhost:4200']);;
         }
 
         $reclamo->prioridad_id = $prioridad_id;
@@ -105,10 +151,10 @@ class ReclamoController extends Controller
         try {
             $reclamo->save();
         } catch (Exception $e) {
-            return response()->json(["mensaje" => "No se pudo actualizar la prioridad", "status" => 500]);
+            return response()->json(["mensaje" => "No se pudo actualizar la prioridad"], 500, ['Access-Control-Allow-Origin' => 'http://localhost:4200']);
         }
 
-        return response()->json(["data" => $reclamo, "status" => 200]);
+        return response()->json(["data" => $reclamo], 200, ['Access-Control-Allow-Origin' => 'http://localhost:4200']);
     }
 
     // Actualiza el estado del reclamo
@@ -118,15 +164,15 @@ class ReclamoController extends Controller
         $estado_id = $request->input('estado_id');
        
         if (!$estado_id || ($estado_id < 1 && $estado_id > 3)) {
-            return response()->json(["mensaje" => "Parametro ESTADO incorrecto", "status" => 400]);
+            return response()->json(["mensaje" => "Parametro ESTADO incorrecto"], 400, ['Access-Control-Allow-Origin' => 'http://localhost:4200']);
         }
         
         if (!$reclamo) {
-            return response()->json(["mensaje" => "Reclamo no encontrado", "status" => 400]);
+            return response()->json(["mensaje" => "Reclamo no encontrado"], 400, ['Access-Control-Allow-Origin' => 'http://localhost:4200']);
         }
         
         if ($reclamo->estado_id == 3) {
-            return response()->json(["mensaje" => "Reclamo ya ha sido resuelto", "status" => 400]);
+            return response()->json(["mensaje" => "Reclamo ya ha sido resuelto"], 400, ['Access-Control-Allow-Origin' => 'http://localhost:4200']);
         }
         
         $reclamo->estado_id = $estado_id;
@@ -134,42 +180,42 @@ class ReclamoController extends Controller
         try {
             $reclamo->save();
         } catch (Exception $e) {
-            return response()->json(["mensaje" => "No se pudo actualizar el estado", "status" => 500]);
+            return response()->json(["mensaje" => "No se pudo actualizar el estado"], 500, ['Access-Control-Allow-Origin' => 'http://localhost:4200']);
         }
 
-        return response()->json(["data" => $reclamo, "status" => 200]);
+        return response()->json(["data" => $reclamo], 200, ['Access-Control-Allow-Origin' => 'http://localhost:4200']);
     }
 
     public function getAllCategorias() {
         try {
             $categorias = RCategoria::all();
-            return response()->json( ["data" => $categorias, "status" => 200] );
+            return response()->json( ["data" => $categorias], 200 );
 
         } catch(Exception $e){
             print($e);
-            return response()->json( ["mensaje" => "Ocurrió un problema al buscar las categorías", "status" => 404] );
+            return response()->json( ["mensaje" => "Ocurrió un problema al buscar las categorías"], 404 );
         }
     }
 
     public function getAllEstados() {
         try {
             $estados = Estado::all();
-            return response()->json( ["data" => $estados, "status" => 200] );
+            return response()->json( ["data" => $estados], 200 );
 
         } catch(Exception $e){
             print($e);
-            return response()->json( ["mensaje" => "Ocurrió un problema al buscar los estados", "status" => 404] );
+            return response()->json( ["mensaje" => "Ocurrió un problema al buscar los estados"], 404 );
         }
     }
 
     public function getAllPrioridades() {
         try {
             $prioridades = Prioridad::all();
-            return response()->json( ["data" => $prioridades, "status" => 200] );
+            return response()->json( ["data" => $prioridades], 200 );
 
         } catch(Exception $e){
             print($e);
-            return response()->json( ["mensaje" => "Ocurrió un problema al buscar los estados", "status" => 404] );
+            return response()->json( ["mensaje" => "Ocurrió un problema al buscar los estados"], 404 );
         }
     }
 }
