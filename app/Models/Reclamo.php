@@ -22,4 +22,9 @@ class Reclamo extends Model
     protected $attributes = [
         'estado_id' => 1,
     ];
+
+    public function cliente()
+    {
+        return $this->belongsTo(Cliente::class, 'cliente_id', 'id_cliente');
+    }
 }

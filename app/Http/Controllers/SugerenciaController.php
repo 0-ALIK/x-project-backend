@@ -23,18 +23,30 @@ class SugerenciaController extends Controller
             );
         } catch (Exception $e) {
             print($e);
-            return response()->json(["mensaje" => "No se pudo registrar la sugerencia"]);
+            return response()->json(["mensaje" => "No se pudo registrar la sugerencia"], 500, ['Access-Control-Allow-Origin' => 'http://localhost:4200']);
         }
-        return response()->json(["mensaje" => "Sugerencia registrada"]);
+        return response()->json(["mensaje" => "Sugerencia registrada"], 200, ['Access-Control-Allow-Origin' => 'http://localhost:4200']);
     }
 
     //Aqui se obtienen las sugerencias guardadas
-    public function getSugerencia(){
+    public function getSugerencia()
+    {
         try {
-            $sugerencias = Sugerencia::get();
-            return response()->json(["sugerencias" => $sugerencias]);
+            $sugerencias = Sugerencia::join('cliente', 'sugerencia.cliente_id', '=', 'cliente.id_cliente')
+                ->join('usuario', 'cliente.usuario_id', '=', 'usuario.id_usuario')
+                ->select(
+                    'sugerencia.id_sugerencia',
+                    'sugerencia.cliente_id',
+                    'usuario.nombre as usuario_nombre',
+                    'sugerencia.contenido',
+                    'sugerencia.fecha',
+                    'sugerencia.valoracion'
+                )
+                ->get();
+    
+            return response()->json(["sugerencias" => $sugerencias], 200);
         } catch (Exception $e) {
-            return "No se pudo obtener las sugerencias";
+            return response($e, 500);
         }
     }
 }
