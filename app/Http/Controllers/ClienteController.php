@@ -23,7 +23,7 @@ class ClienteController extends Controller
         $clDirecciones = new DireccionClienteController();
         $nombreEmpresa = $request->input('empresa');
         try{
-        $query = Cliente::select('cliente.id_cliente', 'usuario.nombre as nombre', 'usuarioEmpresa.nombre as empresa','empresa.id_empresa','cliente.apellido as apellido', 'cliente.cedula', 'cliente.genero','usuario.correo', 'usuario.telefono', 'usuario.foto', DB::raw('69 as frecuencia'), DB::raw('96 as totalPedidos') ,DB::raw('CONCAT(usuario.nombre, " ", cliente.apellido) as cliente69'))
+        $query = Cliente::select('cliente.id_cliente', 'usuario.nombre as nombre', 'usuarioEmpresa.nombre as empresa','empresa.id_empresa','cliente.apellido as apellido', 'cliente.cedula', 'cliente.genero','usuario.correo', 'usuario.telefono', 'usuario.foto', 'cliente.created_at', DB::raw('69 as frecuencia'), DB::raw('96 as totalPedidos') ,DB::raw('CONCAT(usuario.nombre, " ", cliente.apellido) as cliente69'))
         ->join('usuario', 'cliente.usuario_id', '=', 'usuario.id_usuario')
         ->join('empresa', 'empresa.id_empresa', '=', 'cliente.empresa_id')
         ->join('usuario as usuarioEmpresa', 'usuarioEmpresa.id_usuario', '=', 'empresa.usuario_id');
@@ -57,7 +57,12 @@ class ClienteController extends Controller
         ->where('cliente.id_cliente', '=', $id)
         ->get();
 
-        return $clientes;
+        if(isset($clientes[0])) {
+            return $clientes[0];
+        } else {
+            // Aquí puedes devolver una respuesta de error apropiada
+            return response()->json(['error' => 'Cliente no encontrado'], 404);
+        }
     }
 
     public function guardarCliente(Request $request){
@@ -101,7 +106,7 @@ class ClienteController extends Controller
             Storage::disk('public')->makeDirectory('foto_cliente');
         }
         $result = $camposValidados['foto']->storeOnCloudinary('foto_cliente');
-        $usuario->foto = $result->getSecurePath();  
+        $usuario->foto = $result->getSecurePath();
         }
 
         //creamos el cliente
@@ -129,8 +134,8 @@ class ClienteController extends Controller
 
         //confirmamos que todo esta bien
         DB::commit();
-        return response()->json( 
-            ["mensaje" => "Cuenta creada correctamente", 
+        return response()->json(
+            ["mensaje" => "Cuenta creada correctamente",
             "token" => $usuario->createToken('authToken',['cliente'])->plainTextToken,
             "data" => $this->getCliente($cliente->id_cliente),
             "status" => 200,
@@ -152,7 +157,7 @@ class ClienteController extends Controller
             'correo' => ['required', 'email'],
             'foto' =>'image',
         ]);
-        
+
         $cliente = Cliente::find($id);
         $usuario = Usuario::find($cliente->usuario_id);
 
@@ -174,7 +179,7 @@ class ClienteController extends Controller
             }
             $result = $camposValidados['foto']->storeOnCloudinary('foto_cliente');
             $usuario->foto = $result->getSecurePath();
-         } 
+         }
 
         $usuario->nombre = $camposValidados['nombre'];
         $usuario->correo = $camposValidados['correo'];
@@ -203,7 +208,7 @@ class ClienteController extends Controller
         if($request->user()->currentAccessToken()->tokenable->rol == 'empresa' && $request->user()->currentAccessToken()->tokenable_id !== $empresa->usuario_id){
             return response()->json( ["mensaje" => "No tiene permisos para eliminar este cliente", "status" => 401],401 );
         }
-       
+
         //eliminamos las direcciones
         foreach($direcciones as $direccion){
             error_log($direccion);
@@ -226,5 +231,5 @@ class ClienteController extends Controller
             return $exc;
         }
     }
-    
+
 }
