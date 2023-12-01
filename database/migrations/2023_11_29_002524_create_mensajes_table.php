@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('mensaje');
 
             $table->timestamps();
-
+            
             //FROENKYE
             $table->foreign('reclamo_id')->references('id_reclamo')->on('reclamo');
             $table->foreign('cliente_id')->references('id_cliente')->on('cliente');
