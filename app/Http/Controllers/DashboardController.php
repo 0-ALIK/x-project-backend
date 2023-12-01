@@ -5,26 +5,20 @@ use App\Models\Cliente;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Reclamo;
 //use App\Models\Provincia;
-use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
-use Box\Spout\Writer\Common\Creator\Style\StyleBuilder;
-use Box\Spout\Common\Entity\Style\CellAlignment;
-use Box\Spout\Common\Entity\Style\Color;
-use Box\Spout\Common\Entity\Style\Border;
-use Box\Spout\Writer\Common\Creator\Style\BorderBuilder;
 
 
 class DashboardController extends Controller
 {
     public function getAllProductos(Request $request){
-        $formato = $request->input('formato');
         $categoria = $request->input('categoria');
         $marca = $request->input('marca');
         $precio_unit_min = $request->input('precio_unit_min');
         $precio_unit_max = $request->input('precio_unit_max');
         $punto_reorden = $request->input('punto_reorden');
 
-        $query = DB::table('producto')->select('producto.nombre as nombre','foto','marca.nombre as marca','categoria.nombre as categoria', 'producto.precio_unit')
+        $query = DB::table('producto')->select('producto.nombre as nombre','marca.nombre as marca','categoria.nombre as categoria', 'producto.precio_unit', DB::raw('(producto.cantidad_por_caja * producto. cantidad_cajas) as Stock'))
         ->join('marca','marca.id_marca','=','producto.marca_id')
         ->join('categoria','categoria.id_categoria','=','producto.categoria_id');
 
@@ -40,150 +34,28 @@ class DashboardController extends Controller
 
         $productos = $query->get();
 
-        if($formato == "xlsx"){
-            $writer = WriterEntityFactory::createXLSXWriter();
-            $filePath = 'prueba.xlsx';
-        }
-        else{
-            $writer = WriterEntityFactory::createCSVWriter();
-            $filePath = 'prueba.csv';
-        }
-        // Establecer la ruta del archivo
-        
-        $writer->openToBrowser($filePath);
-
-        $border = (new BorderBuilder())
-        ->setBorderBottom(Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID)
-        ->setBorderTop(Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID)
-        ->setBorderLeft(Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID)
-        ->setBorderRight(Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID)
-        ->build();
-
-        $styleDatos = (new StyleBuilder())
-        ->setFontColor('000000') // Color de texto negro
-        ->setBorder($border)// Bordes negros
-        ->setShouldWrapText(true)
-        ->setCellAlignment(CellAlignment::CENTER)
-        ->build();
-
-        $styleHeader = (new StyleBuilder())
-        ->setFontColor('000000') // Color de texto negro
-        ->setBorder($border)// Bordes negros
-        ->setBackgroundColor('98ff98')
-        ->setCellAlignment(CellAlignment::CENTER)
-        ->build();
-
-
-        // Agregar encabezados
-        $headerRow = WriterEntityFactory::createRowFromArray(['Producto', 'Marca', 'Categoria','Precio'], $styleHeader);
-        $writer->addRow($headerRow);
-        
-    
-        // Agregar datos
-                
-        foreach ($productos as $producto) {
-            $dataRow = WriterEntityFactory::createRowFromArray([$producto->nombre, $producto->marca, $producto->categoria, $producto->precio_unit], $styleDatos);
-            $writer->addRow($dataRow);
-        }
-        
-        // Cerrar el escritor (writer)
-        $writer->close();
-        
-
-   
-        
-        // Salir del script después de la descarga
-        exit;
+        return $productos;
     }
 
 
     public function getAllClientes(Request $request){
-        $formato = $request->input('formato');
-        $provincia = $request->input('provincia');
         $genero = $request->input('genero');
-        $nombreEmpresa = $request->input('empresa');
-        $nombreProducto = $request->input('producto');
+        $empresa = $request->input('empresa');
 
-        $query = Cliente::select('cliente.id_cliente as id', 'usuario.nombre', 'cliente.apellido as apellido', 'cliente.cedula', 'cliente.genero', 'usuarioEmpresa.nombre as nombre_empresa', 'usuario.correo as correo_empresa', 'usuario.telefono as telefono_empresa', 'usuario.foto', DB::raw('69 as frecuencia'), DB::raw('96 as totalPedidos'))   
+        $query = Cliente::select('usuario.nombre as Nombre', 'cliente.apellido as Apellido', 'cliente.cedula as Cédula', 'usuarioEmpresa.nombre as Nombre de Empresa', 'cliente.genero as Género', 'usuario.nombre as Empresa', 'usuario.correo as Correo', 'usuario.telefono as Teléfono')   
             ->join('usuario', 'cliente.usuario_id', '=', 'usuario.id_usuario')
             ->join('empresa', 'empresa.id_empresa', '=', 'cliente.empresa_id')
             ->join('usuario as usuarioEmpresa', 'usuarioEmpresa.id_usuario', '=', 'empresa.usuario_id');
-
-            /*->join('cliente_direcciones', 'cliente_direcciones.cliente_id', '=', "cliente.id_cliente")
-            ->join('direccion', 'direccion.id_direccion', '=', 'cliente_direcciones.direccion_id')
-            ->join('provincia', 'direccion.provincia_id', '=' , 'provincia.id_provincia');*/
-            
-
-           
-
             
         // Aplicamos los filtros
         $genero ? $query->where('cliente.genero', '=', $genero) : null;
-        $nombreEmpresa ? $query->where('usuarioEmpresa.nombre', 'like', '%' . $nombreEmpresa . '%') : null;
-
-        $provincia ? $query->where('provincia.nombre', '=', $provincia) : null;
-        $nombreProducto ? $query->where('producto.nombre', 'like', '%' . $nombreProducto . '%') : null;
-
+        $empresa ? $query->where('usuarioEmpresa.nombre', '=', $empresa): null;
         $clientes = $query->get();
 
-        if($formato == "xlsx"){
-            $writer = WriterEntityFactory::createXLSXWriter();
-            $filePath = 'prueba.xlsx';
-        }
-        else{
-            $writer = WriterEntityFactory::createCSVWriter();
-            $filePath = 'prueba.csv';
-        }
-        
-        $writer->openToBrowser($filePath);
-
-        $border = (new BorderBuilder())
-        ->setBorderBottom(Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID)
-        ->setBorderTop(Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID)
-        ->setBorderLeft(Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID)
-        ->setBorderRight(Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID)
-        ->build();
-
-        $styleDatos = (new StyleBuilder())
-        ->setFontColor('000000') // Color de texto negro
-        ->setBorder($border)// Bordes negros
-        ->setShouldWrapText(true)
-        ->setCellAlignment(CellAlignment::CENTER)
-        ->build();
-
-        $styleHeader = (new StyleBuilder())
-        ->setFontColor('000000') // Color de texto negro
-        ->setBorder($border)// Bordes negros
-        ->setBackgroundColor('98ff98')
-        ->setCellAlignment(CellAlignment::CENTER)
-        ->build();
-
-
-        // Agregar encabezados
-        $headerRow = WriterEntityFactory::createRowFromArray(['Nombre', 'Apellido', 'Cedula','Genero', 'Empresa', 'Correo', 'Telefono'], $styleHeader);
-        $writer->addRow($headerRow);
-        
-    
-        // Agregar datos
-                
-        foreach ($clientes as $cliente) {
-            $dataRow = WriterEntityFactory::createRowFromArray([$cliente->nombre, $cliente->apellido, $cliente->cedula, $cliente->genero, $cliente->nombre_empresa, $cliente->correo_empresa, $cliente->telefono_empresa], $styleDatos);
-            $writer->addRow($dataRow);
-        }
-        
-        // Cerrar el escritor (writer)
-        $writer->close();
-        
-
-   
-        
-        // Salir del script después de la descarga
-        exit;
-               
+        return $clientes;        
     }
 
     public function getAllPedidos(Request $request){
-        $formato = $request->input('formato');
         $provincia = $request->input('provincia');
         $producto = $request->input('producto');
         $genero = $request->input('genero');
@@ -209,55 +81,34 @@ class DashboardController extends Controller
         $estado ? $query->where('pedido_estado.nombre', '=',$estado):null;
         $pedidos = $query->get();
 
-        if($formato == "xlsx"){
-            $writer = WriterEntityFactory::createXLSXWriter();
-            $filePath = 'prueba.xlsx';
-        }
-        else{
-            $writer = WriterEntityFactory::createCSVWriter();
-            $filePath = 'prueba.csv';
-        }
-        
-        $writer->openToBrowser($filePath);
+        return $pedidos;
+    }
 
-        $border = (new BorderBuilder())
-        ->setBorderBottom(Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID)
-        ->setBorderTop(Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID)
-        ->setBorderLeft(Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID)
-        ->setBorderRight(Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID)
-        ->build();
-
-        $styleDatos = (new StyleBuilder())
-        ->setFontColor('000000') // Color de texto negro
-        ->setBorder($border)// Bordes negros
-        ->setShouldWrapText(true)
-        ->setCellAlignment(CellAlignment::CENTER)
-        ->build();
-
-        $styleHeader = (new StyleBuilder())
-        ->setFontColor('000000') // Color de texto negro
-        ->setBorder($border)// Bordes negros
-        ->setBackgroundColor('98ff98')
-        ->setCellAlignment(CellAlignment::CENTER)
-        ->build();
+   public function getAllTickets(Request $request){
+        $estado = $request->input('estado');
+        $categoria = $request->input('categoria');
+        $usuario = $request->input('usuario');
+        $prioridad = $request->input('prioridad');
 
 
-        // Agregar encabezados
-        $headerRow = WriterEntityFactory::createRowFromArray(['Nombre', 'Detalles', 'Provincia','Cantidad'], $styleHeader);
-        $writer->addRow($headerRow);
-        
-    
-        // Agregar datos
-                
-        foreach ($pedidos as $pedido) {
-            $dataRow = WriterEntityFactory::createRowFromArray([$pedido->nombre, $pedido->detalles, $pedido->provincia, $pedido->cantidad], $styleDatos);
-            $writer->addRow($dataRow);
-        }
-        
-        // Cerrar el escritor (writer)
-        $writer->close();
+        $query = Reclamo::select(DB::raw('CONCAT(usuario.nombre, " " ,cliente.apellido) as Usuario'), 'categoria.nombre as Categoria del Pedido','reclamo_prioridad.prioridad as Nivel de Prioridad','reclamo_estado.estado as Estado del Reclamo','pedido.detalles as Detalles del Pedido', 'reclamo.descripcion as Descripción del Reclamo', 'reclamo.evidencia as Evidencia', 'reclamo.created_at as Fecha de Reclamo') 
+            ->join('cliente', 'cliente.id_cliente', '=', 'reclamo.cliente_id')
+            ->join('usuario', 'usuario.id_usuario', '=', 'cliente.usuario_id')
+            ->join('pedido', 'reclamo.pedido_id', '=', 'pedido.id_pedido')
+            ->join('categoria', 'reclamo.categoria_id', '=', 'categoria.id_categoria')
+            ->join('reclamo_prioridad', 'reclamo.prioridad_id', '=', 'reclamo_prioridad.id_r_prioridad')
+            ->join('reclamo_estado', 'reclamo.estado_id', '=', 'reclamo_estado.id_r_estado');
 
-        exit();
+        // Aplicamos los filtros
+        $estado ? $query->where('reclamo_estado.estado', '=', $estado) : null;
+        $categoria ? $query->where('categoria.nombre', '=', $categoria) : null;
+        $usuario ? $query->where(DB::raw('CONCAT(usuario.nombre, " " ,cliente.apellido)'), '=', $usuario) : null;
+        $prioridad ? $query->where('reclamo_prioridad.prioridad', '=', $prioridad) : null;
+
+
+        $tickets = $query->get();
+
+        return $tickets;
     }
 }
 

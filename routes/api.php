@@ -10,7 +10,6 @@ use App\Http\Controllers\ClienteController as Cliente;
 use App\Http\Controllers\DireccionClienteController as DireccionCliente;
 use App\Http\Controllers\SucursalController as Sucursal;
 use App\Http\Controllers\DashboardController as Dashboard;
-use App\Http\Controllers\ExportsController as Exports;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,11 +21,13 @@ use App\Http\Controllers\ExportsController as Exports;
 |
 */
 ###########################################
-########    RUTAS DE EMPRESAS   ###########
+########    RUTAS DE DASHBOARDS   ###########
 ###########################################
 Route::get('/api/analitica/reporte/cliente/',  [Dashboard::class, 'getAllClientes']);
 Route::get('/api/analitica/reporte/inventario/',[Dashboard::class, 'getAllProductos']);
 Route::get('/api/analitica/reporte/pedido/',[Dashboard::class, 'getAllPedidos']);
+Route::get('/api/analitica/reporte/reclamo/',[Dashboard::class, 'getAllTickets']);
+
 
 
 
