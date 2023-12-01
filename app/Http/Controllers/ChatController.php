@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Events\ChatEvent;
 use App\Models\Mensaje;
 use App\Models\Reclamo;
+use App\Models\Usuario;
+use App\Models\Cliente;
 
 use Exception;
 
@@ -18,13 +20,30 @@ class ChatController extends Controller
         //             ->groupBy('reclamo.id_reclamo')
         //             ->pluck('reclamo.id_reclamo');
 
-        $openChats = Reclamo::join('mensajes as msj', 'msj.reclamo_id', '=', 'reclamo.id_reclamo')
-                    ->join('usuario as cli', 'reclamo.cliente_id', '=', 'cli.id_usuario')
-                    ->groupBy('reclamo.id_reclamo')
-                    ->select('reclamo.id_reclamo', 'cli.nombre', 'reclamo.descripcion')
-                    ->get();
+        try{
 
-        return response()->json($openChats);
+            // $openChats = Reclamo::select('reclamo.id_reclamo', 'cli.nombre', 'reclamo.descripcion')
+            //         ->join('mensajes as msj', 'msj.reclamo_id', '=', 'reclamo.id_reclamo')
+            //         ->join('usuario as cli', 'reclamo.cliente_id', '=', 'cli.id_usuario')
+            //         ->groupBy('reclamo.id_reclamo', 'cli.nombre', 'reclamo.descripcion')
+            //         ->get();
+
+            $openChats = Reclamo::select('reclamo.id_reclamo', 'usr.nombre', 'cli.apellido', 'reclamo.descripcion')
+                        ->join('mensajes as msj', 'msj.reclamo_id', '=', 'reclamo.id_reclamo')
+                        ->join('cliente as cli', 'msj.cliente_id', '=', 'cli.id_cliente')
+                        ->join('usuario as usr', 'usr.id_usuario', '=', 'cli.usuario_id')
+                        ->get();
+            
+            if ( count($openChats) > 0 ){
+                return response()->json($openChats);
+            } else {
+                return response()->json(["mensaje" => "No hay chats abiertos"]);
+            }
+
+        }
+        catch (Exception $e){
+            return response()->json(["mensaje" => $e], 500);
+        }
 
     }
 
