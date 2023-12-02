@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cliente;
 use Illuminate\Http\Request;
 use App\Models\Pedido;
 use App\Models\PedidoEstado;
@@ -16,7 +17,7 @@ class AdminVentasController extends Controller{
             'cliente.usuario',
             'cliente.empresa',
             'estado',
-            'direccion',
+            'direccion.provincia',
             'pago',
             'pedido_productos.producto'
         ])->get();
@@ -79,16 +80,15 @@ class AdminVentasController extends Controller{
 
         return response()->json($pedido);
     }
-    public function agregarPedido(Request $request)
-    {
-        // Autenticación - obteniendo el id del cliente a través del token
-        // 5|HkIWvj3cygG8kW3IAojLoaQn7azaoC3d7PTbDm0Kf4894e77
-        $cliente_id = 1;
+    public function agregarPedido(Request $request) {
+        $id_usuario = $request->user()->currentAccessToken()->tokenable_id;
+
+        $cliente = Cliente::where('usuario_id', $id_usuario)->first();
 
         // Validar los datos entrantes
         $request->validate([
             'direccion_id' => 'required|exists:direccion,id_direccion',
-            'detalles' => 'required|string',
+            'detalles' => 'string',
             'pedido_productos' => 'required|array',
             'pedido_productos.*.producto_id' => 'required|exists:producto,id_producto',
             'pedido_productos.*.cantidad' => 'required|integer|min:1'
@@ -98,16 +98,20 @@ class AdminVentasController extends Controller{
         $estado_id = PedidoEstado::where('nombre', '=', 'Proceso')->first()->id_pedido_estado;
 
         // Crear un nuevo pedido
-        $pedido = new Pedido([
-            'cliente_id' => $cliente_id,
+        $pedidoData = [
+            'cliente_id' => $cliente->id_cliente,
             'estado_id' => $estado_id,
             'direccion_id' => $request->input('direccion_id'),
-            'detalles' => $request->input('detalles'),
             'fecha' => now(),
             'fecha_cambio_estado' => now()
-        ]);
+        ];
 
-        // Guardar el pedido
+        // Verificar si 'detalles' está presente en la solicitud
+        if ($request->has('detalles')) {
+            $pedidoData['detalles'] = $request->input('detalles');
+        }
+
+        $pedido = new Pedido($pedidoData);
         $pedido->save();
 
         // Agregar productos al pedido
