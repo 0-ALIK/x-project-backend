@@ -11,7 +11,7 @@ class ProductoController extends Controller
     // Método para obtener todos los productos
     public function index()
     {
-        $productos = Producto::all();
+        $productos = Producto::with(['marca', 'categoria'])->get();
         return response()->json($productos)
             ->header('Access-Control-Allow-Origin', '*')
             ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');

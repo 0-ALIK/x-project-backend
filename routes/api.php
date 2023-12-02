@@ -18,6 +18,7 @@ use App\Http\Controllers\DireccionClienteController as DireccionCliente;
 use App\Http\Controllers\SucursalController as Sucursal;
 use App\Http\Controllers\UsuarioController as Usuario;
 use App\Http\Controllers\AdminController as Admin;
+use App\Http\Controllers\ProvinciaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -135,6 +136,9 @@ Route::post('/api/clientes/{id}/direcciones',  [DireccionCliente::class, 'guarda
 Route::put('/api/clientes/{id}/direcciones/{id_direccion}',  [DireccionCliente::class, 'actualizarClienteDireccion'])->middleware(['auth:sanctum', 'ability:cliente,admin_clientes,admin']);
 
 Route::delete('/api/clientes/{id}/direcciones/{id_direccion}',  [DireccionCliente::class, 'eliminarClienteDireccion'])->middleware(['auth:sanctum', 'ability:cliente,admin_clientes,admin']);
+
+Route::get('/api/provincias', [ProvinciaController::class, 'getAllProvincias']);
+
 #RUTAS MODULO 1
 Route::get('/api/inventario', [InventarioController::class, 'verInventario']);
 Route::post('/api/inventario',[InventarioController::class, 'buscarProductos']);
