@@ -27,4 +27,19 @@ class Reclamo extends Model
     {
         return $this->belongsTo(Cliente::class, 'cliente_id', 'id_cliente');
     }
+
+    public function categoria()
+    {
+        return $this->belongsTo(RCategoria::class, 'categoria_id', 'id_r_categoria');
+    }
+
+    public function prioridad()
+    {
+        return $this->belongsTo(Prioridad::class, 'prioridad_id', 'id_r_prioridad');
+    }
+
+    public function estado()
+    {
+        return $this->belongsTo(Estado::class, 'estado_id', 'id_r_estado');
+    }
 }

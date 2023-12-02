@@ -34,8 +34,8 @@ use App\Http\Controllers\ChatController as Chat;
 ###########################################
 ########    RUTAS DE USUARIOS   ###########
 ###########################################
-Route::post('/api/login', [Usuario::class, 'login']);
 
+Route::post('/api/login', [Usuario::class, 'login']);
 Route::post('/api/logout', [Usuario::class, 'logout'])->middleware(['auth:sanctum']);
 
 ###########################################
@@ -43,9 +43,7 @@ Route::post('/api/logout', [Usuario::class, 'logout'])->middleware(['auth:sanctu
 ###########################################
 
 Route::post('api/admin', [Admin::class, 'crearAdmin']);
-
 Route::put('api/admin/{id}', [Admin::class, 'actualizarAdmin']);
-
 Route::delete('api/admin/{id}', [Admin::class, 'borrarAdmin'])->middleware(['auth:sanctum', 'ability:admin']);
 
 ###########################################
@@ -53,13 +51,9 @@ Route::delete('api/admin/{id}', [Admin::class, 'borrarAdmin'])->middleware(['aut
 ###########################################
 
 Route::get('/api/empresas',  [Empresa::class, 'getAllEmpresas'])->middleware(['auth:sanctum', 'ability:admin,admin_clientes']);
-
 Route::get('/api/empresas/{id}',  [Empresa::class, 'getEmpresa']);
-
 Route::post('/api/empresas',  [Empresa::class, 'guardarEmpresa']);
-
 Route::put('/api/empresas/{id}',  [Empresa::class, 'actualizarEmpresa'])->middleware(['auth:sanctum', 'ability:empresa,admin,admin_clientes']);
-
 Route::delete('/api/empresas/{id}',  [Empresa::class, 'eliminarEmpresa'])->middleware(['auth:sanctum', 'ability:empresa,admin,admin_clientes']);
 
 ###########################################
@@ -76,9 +70,7 @@ Route::delete('/api/sucursales/{empresa_id}/{direccion_id}', [Sucursal::class, '
 ###########################################
 
 Route::get('/api/solicitudes',  [Solicitudes::class, 'getAllSolicitudes'])->middleware(['auth:sanctum', 'ability:admin,admin_clientes']);
-
 Route::put('/api/solicitudes/{id}',  [Solicitudes::class, 'actualizarSolicitud'])->middleware(['auth:sanctum', 'ability:admin,admin_clientes']);
-
 //se rechaza la empresa y se elimina xd
 Route::delete('/api/solicitudes/{id}',  [Solicitudes::class, 'rechazarSolicitud'])->middleware(['auth:sanctum', 'ability:admin,admin_clientes']);
 
@@ -87,13 +79,9 @@ Route::delete('/api/solicitudes/{id}',  [Solicitudes::class, 'rechazarSolicitud'
 ###########################################
 
 Route::get('/api/clientes',  [Cliente::class, 'getAllClientes'])->middleware(['auth:sanctum', 'ability:empresa,admin,admin_clientes']);
-
 Route::get('/api/clientes/{id}',  [Cliente::class, 'getCliente']);
-
 Route::post('/api/clientes',  [Cliente::class, 'guardarCliente'])->middleware(['auth:sanctum', 'ability:empresa']);
-
 Route::put('/api/clientes/{id}',  [Cliente::class, 'actualizarCliente'])->middleware(['auth:sanctum', 'ability:admin,cliente,empresa,admin_clientes']);
-
 Route::delete('/api/clientes/{id}',  [Cliente::class, 'eliminarCliente'])->middleware(['auth:sanctum', 'ability:cliente,empresa,admin_clientes,admin']);
 
 ###########################################
@@ -101,11 +89,8 @@ Route::delete('/api/clientes/{id}',  [Cliente::class, 'eliminarCliente'])->middl
 ###########################################
 
 Route::get('/api/clientes/{id}/direcciones',  [DireccionCliente::class, 'getClienteDirecciones']);
-
 Route::post('/api/clientes/{id}/direcciones',  [DireccionCliente::class, 'guardarClienteDireccion'])->middleware(['auth:sanctum', 'ability:cliente,admin_clientes,admin']);
-
 Route::put('/api/clientes/{id}/direcciones/{id_direccion}',  [DireccionCliente::class, 'actualizarClienteDireccion'])->middleware(['auth:sanctum', 'ability:cliente,admin_clientes,admin']);
-
 Route::delete('/api/clientes/{id}/direcciones/{id_direccion}',  [DireccionCliente::class, 'eliminarClienteDireccion'])->middleware(['auth:sanctum', 'ability:cliente,admin_clientes,admin']);
 
 #RUTAS MODULO 1
@@ -156,12 +141,3 @@ Route::get('/api/chat', [Chat::class, 'chats']);
 Route::get('/api/chat/{reclamo_id}', [Chat::class, 'index']);
 Route::post('/api/chat/receive',     [Chat::class, 'receive']);
 Route::post('/api/chat/broadcast',   [Chat::class, 'broadcast']);
-
-
-
-
-
-// SELECT rc.id_reclamo, cli.nombre, rc.descripcion FROM reclamo AS rc
-// JOIN mensajes AS msj ON msj.reclamo_id = rc.id_reclamo
-// JOIN usuario AS cli ON rc.cliente_id = cli.id_usuario
-// GROUP BY rc.id_reclamo

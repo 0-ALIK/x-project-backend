@@ -16,17 +16,7 @@ class ChatController extends Controller
 
     public function chats(){
 
-        // $openChats = Reclamo::join('mensajes', 'mensajes.reclamo_id', '=', 'reclamo.id_reclamo')
-        //             ->groupBy('reclamo.id_reclamo')
-        //             ->pluck('reclamo.id_reclamo');
-
         try{
-
-            // $openChats = Reclamo::select('reclamo.id_reclamo', 'cli.nombre', 'reclamo.descripcion')
-            //         ->join('mensajes as msj', 'msj.reclamo_id', '=', 'reclamo.id_reclamo')
-            //         ->join('usuario as cli', 'reclamo.cliente_id', '=', 'cli.id_usuario')
-            //         ->groupBy('reclamo.id_reclamo', 'cli.nombre', 'reclamo.descripcion')
-            //         ->get();
 
             $openChats = Reclamo::select('reclamo.id_reclamo', 'usr.nombre', 'cli.apellido', 'reclamo.descripcion')
                         ->join('mensajes as msj', 'msj.reclamo_id', '=', 'reclamo.id_reclamo')
@@ -90,7 +80,7 @@ class ChatController extends Controller
         }
     }
 
-    public function receive(Request $request){
-        return response()->json( $request->get("message") );
-    }
+    // public function receive(Request $request){
+    //     return response()->json( $request->get("message") );
+    // }
 }
