@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Reclamo;
 use App\Models\Empresa;
-//use App\Models\Provincia;
 
 
 class DashboardController extends Controller
