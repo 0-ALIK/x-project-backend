@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Reclamo;
+use App\Models\Empresa;
 //use App\Models\Provincia;
 
 
@@ -41,18 +42,47 @@ class DashboardController extends Controller
     public function getAllClientes(Request $request){
         $genero = $request->input('genero');
         $empresa = $request->input('empresa');
+        $estado = $request->input('estado');
+        $provincia = $request->input('provincia');
 
-        $query = Cliente::select('usuario.nombre as Nombre', 'cliente.apellido as Apellido', 'cliente.cedula as Cédula', 'usuarioEmpresa.nombre as Nombre de Empresa', 'cliente.genero as Género', 'usuario.nombre as Empresa', 'usuario.correo as Correo', 'usuario.telefono as Teléfono')   
+
+
+        $query = Cliente::select('usuario.nombre as Nombre', 'cliente.apellido as Apellido', 'cliente.cedula as Cédula', 'usuarioEmpresa.nombre as Nombre de Empresa', 'cliente.genero as Género', 'cliente.estado as Estado', 'usuario.nombre as Empresa', 'usuario.correo as Correo', 'usuario.telefono as Teléfono', 'provincia.nombre as Provincia')   
             ->join('usuario', 'cliente.usuario_id', '=', 'usuario.id_usuario')
             ->join('empresa', 'empresa.id_empresa', '=', 'cliente.empresa_id')
-            ->join('usuario as usuarioEmpresa', 'usuarioEmpresa.id_usuario', '=', 'empresa.usuario_id');
-            
+            ->join('usuario as usuarioEmpresa', 'usuarioEmpresa.id_usuario', '=', 'empresa.usuario_id')
+            ->join('cliente_direcciones', 'cliente_direcciones.cliente_id', '=', 'cliente.id_cliente')
+            ->join('direccion', 'direccion.id_direccion', '=', 'cliente_direcciones.direccion_id')
+            ->join('provincia', 'provincia.id_provincia', '=', 'direccion.provincia_id');
+
         // Aplicamos los filtros
         $genero ? $query->where('cliente.genero', '=', $genero) : null;
         $empresa ? $query->where('usuarioEmpresa.nombre', '=', $empresa): null;
+        $estado ? $query->where('cliente.estado', '=', $estado): null;
+        $provincia ? $query->where('provincia.nombre', '=', $provincia): null;
+
+
         $clientes = $query->get();
 
         return $clientes;        
+    }
+
+    public function getAllEmpresas(Request $request){
+        //obtenemos los filtros params
+        $provincia = $request->input('provincia');
+        $estado = $request->input('estado');
+
+        $query = Empresa::select( 'usuario.nombre as nombre', 'empresa.razon_social', 'empresa.ruc', 'usuario.correo', 'usuario.telefono','empresa.estado as Estado', 'empresa.documento', 'usuario.foto', 'provincia.nombre as Provincia')
+        ->join('usuario', 'empresa.usuario_id', '=', 'usuario.id_usuario')
+        ->join('empresa_direcciones', 'empresa_direcciones.empresa_id', '=', 'empresa.id_empresa')
+        ->join('direccion', 'direccion.id_direccion', '=', 'empresa_direcciones.direccion_id')
+        ->join('provincia', 'provincia.id_provincia', '=', 'direccion.provincia_id');
+
+        $provincia ? $query->where('provincia.nombre', '=', $provincia) : null;
+        $estado ? $query->where('empresa.estado', '=', $estado) : null;
+
+        $empresas = $query->get();
+        return $empresas;
     }
 
     public function getAllPedidos(Request $request){
@@ -91,17 +121,17 @@ class DashboardController extends Controller
         $prioridad = $request->input('prioridad');
 
 
-        $query = Reclamo::select(DB::raw('CONCAT(usuario.nombre, " " ,cliente.apellido) as Usuario'), 'categoria.nombre as Categoria del Pedido','reclamo_prioridad.prioridad as Nivel de Prioridad','reclamo_estado.estado as Estado del Reclamo','pedido.detalles as Detalles del Pedido', 'reclamo.descripcion as Descripción del Reclamo', 'reclamo.evidencia as Evidencia', 'reclamo.created_at as Fecha de Reclamo') 
+        $query = Reclamo::select(DB::raw('CONCAT(usuario.nombre, " " ,cliente.apellido) as Usuario'), 'reclamo_categoria.categoria as Categoria del Pedido','reclamo_prioridad.prioridad as Nivel de Prioridad','reclamo_estado.estado as Estado del Reclamo','pedido.detalles as Detalles del Pedido', 'reclamo.descripcion as Descripción del Reclamo', 'reclamo.evidencia as Evidencia', 'reclamo.created_at as Fecha de Reclamo') 
             ->join('cliente', 'cliente.id_cliente', '=', 'reclamo.cliente_id')
             ->join('usuario', 'usuario.id_usuario', '=', 'cliente.usuario_id')
             ->join('pedido', 'reclamo.pedido_id', '=', 'pedido.id_pedido')
-            ->join('categoria', 'reclamo.categoria_id', '=', 'categoria.id_categoria')
+            ->join('reclamo_categoria', 'reclamo.categoria_id', '=', 'reclamo_categoria.id_r_categoria')
             ->join('reclamo_prioridad', 'reclamo.prioridad_id', '=', 'reclamo_prioridad.id_r_prioridad')
             ->join('reclamo_estado', 'reclamo.estado_id', '=', 'reclamo_estado.id_r_estado');
 
         // Aplicamos los filtros
         $estado ? $query->where('reclamo_estado.estado', '=', $estado) : null;
-        $categoria ? $query->where('categoria.nombre', '=', $categoria) : null;
+        $categoria ? $query->where('reclamo_categoria.categoria', '=', $categoria) : null;
         $usuario ? $query->where(DB::raw('CONCAT(usuario.nombre, " " ,cliente.apellido)'), '=', $usuario) : null;
         $prioridad ? $query->where('reclamo_prioridad.prioridad', '=', $prioridad) : null;
 
@@ -110,6 +140,79 @@ class DashboardController extends Controller
 
         return $tickets;
     }
+
+    public function getCategorias(){
+        $query = DB::table('categoria') 
+        ->select('*') ;    
+
+        $categorias = $query->get();
+
+        return $categorias;
+    }
+
+    public function getMarcas(){
+        $query = DB::table('marca') 
+        ->select('*') ;    
+
+        $categorias = $query->get();
+
+        return $categorias;
+    }
+
+    public function getProvincias(){
+        $query = DB::table('provincia') 
+        ->select('*') ;    
+
+        $categorias = $query->get();
+
+        return $categorias;
+    }
+
+    public function getProductos(){
+        $query = DB::table('producto') 
+        ->select('*') ;    
+
+        $categorias = $query->get();
+
+        return $categorias;
+    }
+
+    public function getEstados(){
+        $query = DB::table('pedido_estado') 
+        ->select('*') ;    
+
+        $categorias = $query->get();
+
+        return $categorias;
+    }
+
+    public function getEstadosTickets(){
+        $query = DB::table('reclamo_estado') 
+        ->select('*') ;    
+
+        $categorias = $query->get();
+
+        return $categorias;
+    }
+
+    public function getCategoriasTickets(){
+        $query = DB::table('reclamo_categoria') 
+        ->select('*') ;    
+
+        $categorias = $query->get();
+
+        return $categorias;
+    }
+
+    public function getPrioridadTickets(){
+        $query = DB::table('reclamo_prioridad') 
+        ->select('*') ;    
+
+        $categorias = $query->get();
+
+        return $categorias;
+    }
+    
 }
 
 

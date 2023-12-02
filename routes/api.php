@@ -26,7 +26,24 @@ use App\Http\Controllers\DashboardController as Dashboard;
 Route::get('/api/analitica/reporte/cliente/',  [Dashboard::class, 'getAllClientes']);
 Route::get('/api/analitica/reporte/inventario/',[Dashboard::class, 'getAllProductos']);
 Route::get('/api/analitica/reporte/pedido/',[Dashboard::class, 'getAllPedidos']);
+Route::get('/api/analitica/reporte/empresa/',[Dashboard::class, 'getAllEmpresas']);
 Route::get('/api/analitica/reporte/reclamo/',[Dashboard::class, 'getAllTickets']);
+Route::get('/api/analitica/categoria/',[Dashboard::class, 'getCategorias']);
+Route::get('/api/analitica/marca/',[Dashboard::class, 'getMarcas']);
+Route::get('/api/analitica/provincias/',[Dashboard::class, 'getProvincias']);
+Route::get('/api/analitica/producto/',[Dashboard::class, 'getProductos']);
+Route::get('/api/analitica/estado/',[Dashboard::class, 'getEstados']);
+Route::get('/api/analitica/estadoTickets/',[Dashboard::class, 'getEstadosTickets']);
+Route::get('/api/analitica/categoriaTickets/',[Dashboard::class, 'getCategoriasTickets']);
+Route::get('/api/analitica/prioridadTickets/',[Dashboard::class, 'getPrioridadTickets']);
+
+
+
+
+
+
+
+
 
 
 
