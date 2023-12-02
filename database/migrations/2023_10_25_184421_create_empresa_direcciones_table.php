@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('nombre'); //nombre de la sucursal
 
             $table->timestamps();
-            
+
             // FKS
             $table->foreign('empresa_id')->references('id_empresa')->on('empresa');
             $table->foreign('direccion_id')->references('id_direccion')->on('direccion');

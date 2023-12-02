@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    
+
     public function up(): void
     {
         Schema::create('empresa', function (Blueprint $table) {
@@ -20,12 +20,12 @@ return new class extends Migration
             $table->timestamps();
 
             // foreign keys
-            $table->foreign('usuario_id')->references('id_usuario')->on('usuario'); 
+            $table->foreign('usuario_id')->references('id_usuario')->on('usuario');
 
         });
     }
 
-   
+
     public function down(): void
     {
         Schema::dropIfExists('empresa');

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Marca;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class MarcaController extends Controller
 {
@@ -90,14 +90,36 @@ class MarcaController extends Controller
         try {
             $marca = Marca::find($id_marca);
 
-            if ($request->hasfile)
-
-            //verifica que la marca exista
             if (!$marca) {
                 return response()->json(["mensaje" => "La marca no existe", "status" => 400]);
             }
 
+            //verifica si se ha subido un archivo
+            if ($request->hasFile('logo')){
+                // Verificar el tipo de archivo
+                $extension = $request->file('logo')->getClientOriginalExtension();
+                if ($extension != 'jpg' && $extension != 'png') {
+                    return response()->json(['error' => 'Tipo de archivo no soportado. Solo se permiten archivos jpg y png.'], 400);
+                }
+            }
+
+            //verifica si el nombre de la marca ha sido cambiado
+            if ($request->input('nombre') != $marca->nombre){
+                //verifica que la nueva marca no este en la bd
+                if (Marca::where('nombre', $request->input('nombre'))->first()) {
+                    return response()->json(['error' => 'Ya existe una marca con el mismo nombre.'], 400);
+                }
+            }
+
+            //obtiene el public_id de la url de la imagen
+            $key = explode('/', pathinfo(parse_url($marca->logo, PHP_URL_PATH), PATHINFO_DIRNAME));
+            $public_id = end($key) . '/' . pathinfo(parse_url($marca->logo, PHP_URL_PATH), PATHINFO_FILENAME);
+
+            Cloudinary::destroy($public_id);
+            $result = $request->file('logo')->storeOnCloudinary('marca_logo');
+
             $marca->fill($request->all());
+            $marca->logo = $result->getSecurePath();
             $marca->save();
 
             return response()->json( ["data" => $marca, "status" => 200] );
@@ -110,14 +132,27 @@ class MarcaController extends Controller
 
     //eliminar una marca en especifico
     public function deleteMarca($id_marca){
-        $marca = Marca::find($id_marca);
+        try {
+            $marca = Marca::find($id_marca);
 
-        if (!$marca) {
-            return response()->json(['error' => 'Marca no encontrada']);
+            //verifica que la marca exista
+            if (!$marca) {
+                return response()->json(['error' => 'Marca no encontrada']);
+            }
+
+            //obtiene el public_id de la url de la imagen
+            $key = explode('/', pathinfo(parse_url($marca->logo, PHP_URL_PATH), PATHINFO_DIRNAME));
+            $public_id = end($key) . '/' . pathinfo(parse_url($marca->logo, PHP_URL_PATH), PATHINFO_FILENAME);
+
+            //borra la imagen en donde esta almacenada
+            Cloudinary::destroy($public_id);
+
+            $marca->delete();
+
+            return response()->json(['message' => 'Marca eliminada correctamente'], 201);
+        } catch(Exception $e){
+            print($e);
+            return response()->json( ["mensaje" => "Error al eliminar la marca", "status" => 404] );
         }
-
-        $marca->delete();
-
-        return response()->json(['message' => 'Marca eliminada correctamente']);
     }
 }

@@ -7,15 +7,20 @@ use Illuminate\Http\Request;
 use App\Models\Producto;
 use Exception;
 
-class InventarioController extends Controller
-{
+class InventarioController extends Controller{
 
     //muestra todo el inventario
-    public function verInventario(Request $request){
-        // Consulta los productos con relaciones cargadas
-        $productos = Producto::join('marca', 'producto.marca_id', '=', 'marca.id_marca')
+    public function verInventario(Request $request)
+{
+    // Consulta los productos con relaciones cargadas
+    $productos = Producto::with(['marca', 'categoria'])
+        ->join('marca', 'producto.marca_id', '=', 'marca.id_marca')
         ->join('categoria', 'producto.categoria_id', '=', 'categoria.id_categoria')
-        ->select('categoria.nombre as Categoria', 'marca.nombre as Marca', 'producto.nombre', 'producto.precio_unit', 'producto.cantidad_por_caja', 'producto.foto', 'producto.punto_reorden', 'producto.cantidad_cajas')
+        ->select(
+            'categoria.*', // Todas las columnas de la tabla 'categoria'
+            'marca.*', // Todas las columnas de la tabla 'marca'
+            'producto.*' // Todas las columnas de la tabla 'producto'
+        )
         ->get();
 
         if ($productos->isEmpty()) {
@@ -32,25 +37,25 @@ class InventarioController extends Controller
             'nombre' => 'string',
             'categoria' => 'integer',
         ]);
-    
+
         try {
             // Obtén los parámetros de búsqueda del formulario
             $nombre = $request->input('nombre');
             $categoria = $request->input('categoria');
-    
+
             // Consulta de productos con filtros
             $query = Producto::query();
-    
+
             if (!empty($nombre)) {
                 $query->where('nombre', 'like', '%' . $nombre . '%');
             }
-    
+
             if (!empty($categoria)) {
                 $query->where('categoria_id', $categoria);
             }
-    
+
             $productosFiltrados = $query->get();
-    
+
             // Devuelve los resultados de la búsqueda como respuesta JSON
             return response()->json(['productos' => $productosFiltrados], 200);
         } catch (Exception $e) {
