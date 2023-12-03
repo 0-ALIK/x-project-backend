@@ -71,7 +71,7 @@ class EmpresaController extends Controller
             'correo' => ['required', 'email'],
             'pass' => 'required',
             'documento' => 'required|mimes:pdf|max:10000',
-            'razon_social' => 'required',
+            
         ]);
 
         //crea una carpeta con el nombre documento_empresa si no existe
@@ -98,7 +98,7 @@ class EmpresaController extends Controller
         //creamos la empresa
         $empresa = Empresa::create([
             'usuario_id' => $usuario->id_usuario,
-            'razon_social' => $camposValidados['razon_social'],
+            'razon_social' => $camposValidados['nombre'],
             'ruc' => $camposValidados['ruc'],
             'documento' => $result->getSecurePath(),
             'estado' => 'pendiente',
