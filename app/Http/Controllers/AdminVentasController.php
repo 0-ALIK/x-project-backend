@@ -18,7 +18,7 @@ class AdminVentasController extends Controller{
             'cliente.empresa',
             'estado',
             'direccion.provincia',
-            'pago',
+            'pago.formaPago',
             'pedido_productos.producto'
         ])->get();
 

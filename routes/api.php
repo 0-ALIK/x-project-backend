@@ -45,8 +45,11 @@ Route::group(['prefix' => '/api/admin'], function () {
 // Rutas de ventas para el administrador
 Route::group(['prefix' => '/api/admin'], function () {
     // Rutas para listar pedidos y cambiar el estado de un pedido
+    Route::get('/formas_pago', [PagoController::class, 'listarFormasPago']);
     Route::get('/pagos', [PagoController::class, 'listarPagos']);
-    Route::put('/pagos/{pedidoId}', [PagoController::class, 'registrarPago']);
+    Route::post('/pagos/{pedidoId}', [PagoController::class, 'registrarPago']);
+    Route::put('/pagos/{pagoId}', [PagoController::class, 'actualizarPago']);
+    Route::delete('/pagos/{pagoId}', [PagoController::class, 'eliminarPago']);
     // Puedes agregar más rutas según sea necesario
 });
 
