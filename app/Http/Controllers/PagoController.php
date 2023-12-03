@@ -42,14 +42,14 @@ class PagoController extends Controller
             return response()->json(['error' => 'El monto del pago excede el importe debido del pedido'], 422);
         }
 
-        $pago = Pago::create([
+        $pagoCreado = Pago::create([
             'pedido_id' => $pedidoId,
             'forma_pago_id' => $request->input('forma_pago_id'),
             'monto' => $request->input('monto'),
             'fecha' => now(),
-        ]);
+        ])->with(['formaPago']);
 
-        return $pago;
+        return Pago::with(['formaPago'])->latest()->first();
     }
 
     public function actualizarPago(Request $request, $pagoId)
