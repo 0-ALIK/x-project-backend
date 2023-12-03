@@ -17,7 +17,7 @@ use App\Utils\PermisoUtil;
 class DireccionClienteController extends controller
 {
     public function getClienteDirecciones($id){
-        $direcciones = Cliente_direcciones::select('direccion.id_direccion as id_direccion', 'direccion.codigo_postal', 'direccion.detalles', 'direccion.telefono', 'provincia.nombre as provincia')
+        $direcciones = Cliente_direcciones::select('direccion.id_direccion as id_direccion', 'cliente_id','direccion.codigo_postal', 'direccion.detalles', 'direccion.telefono', 'provincia.nombre as provincia')
         ->join('direccion', 'cliente_direcciones.direccion_id', '=', 'direccion.id_direccion')
         ->join('provincia', 'direccion.provincia_id', '=', 'provincia.id_provincia')
         ->where('cliente_direcciones.cliente_id', '=', $id)
