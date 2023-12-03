@@ -206,7 +206,7 @@ class ClienteController extends Controller
         //error_log($empresa);
         //error_log($request->user()->currentAccessToken()->tokenable);
         //verificamos que el usuario que esta actualizando es el mismo que el de la sesion o el de la empresa a que pertenece
-        PermisoUtil::verificarAccionCliente($request, $usuario, $empresa);
+       
         if($request->user()->currentAccessToken()->tokenable->rol == 'empresa' && $request->user()->currentAccessToken()->tokenable_id !== $empresa->usuario_id){
             return response()->json( ["mensaje" => "No tiene permisos para eliminar este cliente", "status" => 401],401 );
         }
