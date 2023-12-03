@@ -16,6 +16,7 @@ use App\Utils\PermisoUtil;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\DireccionClienteController;
+use App\Models\Pedido;
 
 class ClienteController extends Controller
 {
@@ -23,7 +24,7 @@ class ClienteController extends Controller
         $clDirecciones = new DireccionClienteController();
         $nombreEmpresa = $request->input('empresa');
         try{
-        $query = Cliente::select('cliente.id_cliente', 'usuario.nombre as nombre', 'usuarioEmpresa.nombre as empresa','empresa.id_empresa','cliente.apellido as apellido', 'cliente.cedula', 'cliente.genero','usuario.correo', 'usuario.telefono', 'usuario.foto', 'cliente.created_at', DB::raw('69 as frecuencia'), DB::raw('96 as totalPedidos') ,DB::raw('CONCAT(usuario.nombre, " ", cliente.apellido) as cliente69'))
+        $query = Cliente::select('cliente.id_cliente', 'usuario.nombre as nombre', 'usuarioEmpresa.nombre as empresa','empresa.id_empresa','cliente.apellido as apellido', 'cliente.cedula', 'cliente.genero','usuario.correo', 'usuario.telefono', 'usuario.foto', 'cliente.created_at', DB::raw('69 as frecuencia') ,DB::raw('CONCAT(usuario.nombre, " ", cliente.apellido) as cliente69'))
         ->join('usuario', 'cliente.usuario_id', '=', 'usuario.id_usuario')
         ->join('empresa', 'empresa.id_empresa', '=', 'cliente.empresa_id')
         ->join('usuario as usuarioEmpresa', 'usuarioEmpresa.id_usuario', '=', 'empresa.usuario_id');
@@ -40,6 +41,7 @@ class ClienteController extends Controller
         $clientes = $query->get();
 
         foreach($clientes as &$cliente){
+            $cliente->total_pedidos = Pedido::where('cliente_id', '=', $cliente->id_cliente)->count();
             $cliente->direcciones = $clDirecciones->getClienteDirecciones($cliente->id_cliente);
         }
 
