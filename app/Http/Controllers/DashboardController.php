@@ -120,7 +120,8 @@ class DashboardController extends Controller
         $prioridad = $request->input('prioridad');
 
 
-        $query = Reclamo::select(DB::raw('CONCAT(usuario.nombre, " " ,cliente.apellido) as Usuario'), 'reclamo_categoria.categoria as Categoria del Pedido','reclamo_prioridad.prioridad as Nivel de Prioridad','reclamo_estado.estado as Estado del Reclamo','pedido.detalles as Detalles del Pedido', 'reclamo.descripcion as Descripción del Reclamo', 'reclamo.evidencia as Evidencia', 'reclamo.created_at as Fecha de Reclamo') 
+        $query = DB::table('reclamo')
+            ->select(DB::raw('CONCAT(usuario.nombre, " " ,cliente.apellido) as Usuario'), 'reclamo_categoria.categoria as Categoria del Pedido','reclamo_prioridad.prioridad as Nivel de Prioridad','reclamo_estado.estado as Estado del Reclamo','pedido.detalles as Detalles del Pedido', 'reclamo.descripcion as Descripción del Reclamo', 'reclamo.evidencia as Evidencia', 'reclamo.created_at as Fecha de Reclamo') 
             ->join('cliente', 'cliente.id_cliente', '=', 'reclamo.cliente_id')
             ->join('usuario', 'usuario.id_usuario', '=', 'cliente.usuario_id')
             ->join('pedido', 'reclamo.pedido_id', '=', 'pedido.id_pedido')
