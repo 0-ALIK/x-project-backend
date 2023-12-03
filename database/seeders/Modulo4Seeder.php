@@ -22,7 +22,7 @@ class Modulo4Seeder extends Seeder
         # ESTADOS POR DEFECTO
         $dataEstados = array('espera', 'revisado', 'resuelto');
         # CATEGORÍAS POR DEFECTO
-        $dataCategorias = array('retraso', 'equivocado', 'dañado', 'devolución', 'otro');
+        $dataCategorias = array('retraso', 'equivocado', 'dañado', 'devolución');
         
         foreach($dataPrioridades as $data) {
             Prioridad::create(

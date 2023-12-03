@@ -18,10 +18,14 @@ class ChatController extends Controller
 
         try{
 
-            $openChats = Reclamo::select('reclamo.id_reclamo', 'usr.nombre', 'cli.apellido', 'reclamo.descripcion')
-                        ->join('mensajes as msj', 'msj.reclamo_id', '=', 'reclamo.id_reclamo')
-                        ->join('cliente as cli', 'msj.cliente_id', '=', 'cli.id_cliente')
-                        ->join('usuario as usr', 'usr.id_usuario', '=', 'cli.usuario_id')
+            $openChats = Reclamo::select('reclamo.id_reclamo', 'cli.id_cliente', 'usr.nombre', 'cli.apellido', 'reclamo.descripcion')
+                        ->join('cliente as cli', 'reclamo.cliente_id', '=', 'cli.id_cliente')
+                        ->join('mensajes as msj', function ($join) {
+                            $join->on('reclamo.cliente_id', '=', 'msj.cliente_id');
+                            $join->on('reclamo.id_reclamo', '=', 'msj.reclamo_id');
+                        })
+                        ->join('usuario as usr', 'cli.usuario_id', '=', 'usr.id_usuario')
+                        ->groupBy('reclamo.id_reclamo', 'cli.id_cliente', 'usr.nombre', 'cli.apellido', 'reclamo.descripcion')
                         ->get();
             
             if ( count($openChats) > 0 ){

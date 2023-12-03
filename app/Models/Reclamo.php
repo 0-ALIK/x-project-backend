@@ -42,4 +42,11 @@ class Reclamo extends Model
     {
         return $this->belongsTo(Estado::class, 'estado_id', 'id_r_estado');
     }
+
+    // public function pedido()
+    // {
+    //     return $this->belongsTo(Pedido::class, 'estado_id', 'id_r_estado');
+    // } FALTA MODELO PEDIDO
+
+
 }
