@@ -79,7 +79,7 @@ class ClienteController extends Controller
             'correo' => ['required', 'email'],
             'pass' => 'required',
             'detalles',
-            'foto' =>'image|mimes:jpeg,png,jpg,svg|max:2048',
+            'foto' =>['required','image|mimes:jpeg,png,jpg,svg|max:2048'],
             'direccion' => 'required',
             'codigoPostal' => 'required',
             'provincia' => 'required',
@@ -96,7 +96,7 @@ class ClienteController extends Controller
             'telefono' => $camposValidados['telefono'],
             'pass' => $camposValidados['pass'],
             'rol' => 'cliente',
-            'foto' => '-',
+            'foto' => 'https://definicion.de/wp-content/uploads/2019/07/perfil-de-usuario.png',
             'detalles' => 'prueba',
         ]);
 

@@ -71,6 +71,7 @@ class EmpresaController extends Controller
             'correo' => ['required', 'email'],
             'pass' => 'required',
             'documento' => 'required|mimes:pdf|max:10000',
+            'razon_social' => 'required',
         ]);
 
         //crea una carpeta con el nombre documento_empresa si no existe
@@ -89,7 +90,7 @@ class EmpresaController extends Controller
             'telefono' => $camposValidados['telefono'],
             'correo' => $camposValidados['correo'],
             'pass' => $camposValidados['pass'],
-            'foto' => '-',
+            'foto' => 'https://cdn-icons-png.flaticon.com/512/4812/4812244.png',
             'detalles' => 'prueba',
             'rol' => 'empresa',
         ]);
@@ -97,7 +98,7 @@ class EmpresaController extends Controller
         //creamos la empresa
         $empresa = Empresa::create([
             'usuario_id' => $usuario->id_usuario,
-            'razon_social' => $camposValidados['nombre'],
+            'razon_social' => $camposValidados['razon_social'],
             'ruc' => $camposValidados['ruc'],
             'documento' => $result->getSecurePath(),
             'estado' => 'pendiente',
@@ -128,7 +129,8 @@ class EmpresaController extends Controller
             'ruc' => 'required',
             'telefono' => 'required',
             'correo' => ['required', 'email'],
-            'foto' => 'image|mimes:jpeg,png,jpg,svg|max:2048'
+            'foto' => ['required','image|mimes:jpeg,png,jpg,svg|max:2048'],
+            'razon_social' => 'required',
         ]);
 
         $empresa = Empresa::find($id);
@@ -157,7 +159,7 @@ class EmpresaController extends Controller
         $usuario->foto = $result->getSecurePath();; //aqui va el url de la foto
         $usuario->save();   
         //actualizamos los datos de la empresa
-        $empresa->razon_social = $camposValidados['nombre'];
+        $empresa->razon_social = $camposValidados['razon_social'];
         $empresa->ruc = $camposValidados['ruc'];
         $empresa->save();
         db::commit();
