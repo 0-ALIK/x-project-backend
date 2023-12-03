@@ -37,6 +37,7 @@ Route::group(['prefix' => '/api/admin'], function () {
     Route::get('/pedidos', [AdminVentasController::class, 'listarPedidos']);
     Route::put('/pedidos/{pedidoId}/cambiar-estado', [AdminVentasController::class, 'cambiarEstadoPedido']);
     Route::get('/pedidos/{pedidoId}', [AdminVentasController::class, 'obtenerPedidoConPago']);
+    Route::delete('/pedidos/{pedidoId}', [AdminVentasController::class, 'borrarPedido']);
     Route::post('/pedidos/agregar', [AdminVentasController::class, 'agregarPedido'])
         ->middleware(['auth:sanctum', 'ability:cliente,admin_clientes,admin']);
     // Puedes agregar más rutas según sea necesario

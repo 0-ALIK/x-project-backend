@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Pedido;
 use App\Models\PedidoEstado;
 use App\Models\PedidoProducto;
-
+use App\Models\Producto;
 
 class AdminVentasController extends Controller{
     public function listarPedidos()
@@ -114,14 +114,47 @@ class AdminVentasController extends Controller{
         $pedido = new Pedido($pedidoData);
         $pedido->save();
 
-        // Agregar productos al pedido
         foreach($request->pedido_productos as $producto) {
-            PedidoProducto::create([
+            $pedidoProducto = PedidoProducto::create([
                 'producto_id' => $producto['producto_id'],
                 'pedido_id' => $pedido->id_pedido,
                 'cantidad' => $producto['cantidad']
             ]);
+
+            // Restar la cantidad de cajas del producto
+            $productoModel = Producto::find($producto['producto_id']);
+            if ($productoModel) {
+                $productoModel->cantidad_cajas -= $producto['cantidad'];
+                $productoModel->save();
+            }
         }
         return response()->json(['message' => 'Pedido creado con éxito', 'data' => $pedido]);
+    }
+
+    public function borrarPedido($pedidoId) {
+        $pedido = Pedido::find($pedidoId);
+
+        if (!$pedido) {
+            return response()->json(['error' => 'Pedido no encontrado'], 404);
+        }
+
+        // Obtener los productos asociados al pedido
+        $productosPedido = PedidoProducto::where('pedido_id', $pedidoId)->get();
+
+        // Devolver la cantidad de productos al stock
+        foreach ($productosPedido as $productoPedido) {
+            $producto = Producto::find($productoPedido->producto_id);
+
+            if ($producto) {
+                $producto->cantidad_cajas += $productoPedido->cantidad;
+                $producto->save();
+            }
+        }
+
+        // Eliminar el pedido y los productos asociados
+        PedidoProducto::where('pedido_id', $pedidoId)->delete();
+        $pedido->delete();
+
+        return response()->json(['message' => 'Pedido eliminado con éxito']);
     }
 }
