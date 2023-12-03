@@ -3,9 +3,12 @@
 use App\Http\Controllers\AgregarMarcaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminVentasController;
+use App\Http\Controllers\CarritoComprasController;
+use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\PagoController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\CategoriaController;
-use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\InventarioController;
 use App\Models\Producto;
 use App\Http\Controllers\EmpresaController as Empresa;
@@ -15,18 +18,60 @@ use App\Http\Controllers\DireccionClienteController as DireccionCliente;
 use App\Http\Controllers\SucursalController as Sucursal;
 use App\Http\Controllers\UsuarioController as Usuario;
 use App\Http\Controllers\AdminController as Admin;
+use App\Http\Controllers\ProvinciaController;
 
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
+| Here is where you can register API routes for your application.
+| These routes are loaded by the RouteServiceProvider and all of them
+| will be assigned to the "api" middleware group. Make something great!
 |
 */
 
+// Rutas de ventas para el administrador
+Route::group(['prefix' => '/api/admin'], function () {
+    // Rutas para listar pedidos y cambiar el estado de un pedido
+    Route::get('/pedidos', [AdminVentasController::class, 'listarPedidos']);
+    Route::put('/pedidos/{pedidoId}/cambiar-estado', [AdminVentasController::class, 'cambiarEstadoPedido']);
+    Route::get('/pedidos/{pedidoId}', [AdminVentasController::class, 'obtenerPedidoConPago']);
+    Route::post('/pedidos/agregar', [AdminVentasController::class, 'agregarPedido'])
+        ->middleware(['auth:sanctum', 'ability:cliente,admin_clientes,admin']);
+    // Puedes agregar más rutas según sea necesario
+});
+
+// Rutas de ventas para el administrador
+Route::group(['prefix' => '/api/admin'], function () {
+    // Rutas para listar pedidos y cambiar el estado de un pedido
+    Route::get('/formas_pago', [PagoController::class, 'listarFormasPago']);
+    Route::get('/pagos', [PagoController::class, 'listarPagos']);
+    Route::post('/pagos/{pedidoId}', [PagoController::class, 'registrarPago']);
+    Route::put('/pagos/{pagoId}', [PagoController::class, 'actualizarPago']);
+    Route::delete('/pagos/{pagoId}', [PagoController::class, 'eliminarPago']);
+    // Puedes agregar más rutas según sea necesario
+});
+
+// Rutas para la interfaz de cliente
+Route::group(['prefix' => '/api'], function () {
+    // Nuevas rutas del carrito
+    Route::get('/carrito/ver', [CarritoComprasController::class, 'verCarrito']);
+    Route::post('/carrito/agregar/{productoId}', [CarritoComprasController::class, 'agregarAlCarrito']);
+    Route::delete('/carrito/eliminar/{productoId}', [CarritoComprasController::class, 'eliminarDelCarrito']);
+    Route::get('/carrito/pago', [CarritoComprasController::class, 'irAPago']);
+    Route::post('/carrito/pagar', [CarritoComprasController::class, 'procesarPedido']);
+    Route::get('/carrito/factura/{pedidoId}', [CarritoComprasController::class, 'generarFactura']);
+});
+
+// Ruta para obtener todos los productos
+Route::get('/productos', [ProductoController::class, 'index']);
+
+// Ruta para obtener detalles de un producto
+Route::get('/productos/{id}', [ProductoController::class, 'show']);
+
+// Ruta para crear un nuevo producto
+Route::post('/productos', [ProductoController::class, 'store']);
 ###########################################
 ########    RUTAS DE USUARIOS   ###########
 ###########################################
@@ -95,6 +140,9 @@ Route::post('/api/clientes/{id}/direcciones',  [DireccionCliente::class, 'guarda
 Route::put('/api/clientes/{id}/direcciones/{id_direccion}',  [DireccionCliente::class, 'actualizarClienteDireccion'])->middleware(['auth:sanctum', 'ability:cliente,admin_clientes,admin']);
 
 Route::delete('/api/clientes/{id}/direcciones/{id_direccion}',  [DireccionCliente::class, 'eliminarClienteDireccion'])->middleware(['auth:sanctum', 'ability:cliente,admin_clientes,admin']);
+
+Route::get('/api/provincias', [ProvinciaController::class, 'getAllProvincias']);
+
 #RUTAS MODULO 1
 Route::get('/api/inventario', [InventarioController::class, 'verInventario']);
 Route::post('/api/inventario',[InventarioController::class, 'buscarProductos']);
@@ -114,5 +162,19 @@ Route::get('/api/producto/{id_producto}', [ProductoController::class, 'getProduc
 Route::put('/api/producto/{id_producto}', [ProductoController::class, 'updateProducto']);
 Route::delete('/api/producto/{id_producto}', [ProductoController::class, 'deleteProducto']);
 
+// Ruta para actualizar un producto
+Route::put('/productos/{id}', [ProductoController::class, 'update']);
 
+// Ruta para eliminar un producto
+Route::delete('/productos/{id}', [ProductoController::class, 'destroy']);
 
+// Ruta para obtener detalles de un producto
+Route::get('/producto/detalles/{id}', [ProductoController::class, 'mostrarDetalles']);
+
+// Rutas para el método de pago
+Route::group(['prefix' => '/api/payment'], function () {
+    // Rutas para el controlador de pagos
+    Route::get('/show-page', [PagoController::class, 'showPaymentPage'])->name('payment.page');
+    Route::post('/process-payment/process-payment', [PagoController::class, 'processPayment'])->name('process.payment');
+    // Otras rutas relacionadas con el método de pago
+});

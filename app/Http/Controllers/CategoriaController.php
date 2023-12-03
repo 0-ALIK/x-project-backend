@@ -53,7 +53,7 @@ class CategoriaController extends Controller
     public function getCategoria($id_categoria) {
         try {
             $categoria = Categoria::findOrFail($id_categoria);
-    
+
             return response()->json(["data" => $categoria, "status" => 200]);
         } catch (Exception $e) {
             print($e);
@@ -64,14 +64,22 @@ class CategoriaController extends Controller
     //actualiza la informacion de una categoria en especifico
     public function updateCategoria(Request $request, $id_categoria) {
         $categoria = Categoria::find($id_categoria);
-    
+
         if (!$categoria) {
             return response()->json(["mensaje" => "La categoria no existe", "status" => 400]);
         }
-    
+
+        //verifica si el nombre de la marca ha sido cambiado
+        if ($request->input('nombre') != $categoria->nombre){
+            //verifica que la nueva marca no este en la bd
+            if (Categoria::where('nombre', $request->input('nombre'))->first()) {
+                return response()->json(['error' => 'Ya existe una marca con el mismo nombre.'], 400);
+            }
+        }
+
         $categoria->fill($request->all());
         $categoria->save();
-    
+
         return response()->json(["data" => $categoria, "status" => 200]);
     }
 

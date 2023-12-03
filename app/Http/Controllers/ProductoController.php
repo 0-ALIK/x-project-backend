@@ -3,12 +3,72 @@
 namespace App\Http\Controllers;
 
 use App\Models\Producto;
-
-use Exception;
 use Illuminate\Http\Request;
+Use Exception;
+use Illuminate\Support\Facades\Storage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ProductoController extends Controller
 {
+    // Método para obtener todos los productos
+    public function index()
+    {
+        $productos = Producto::with(['marca', 'categoria'])->get();
+        return response()->json($productos)
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    }
+
+    // Método para obtener un producto por ID
+    public function show($id)
+    {
+        $producto = Producto::findOrFail($id);
+        return response()->json($producto)
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    }
+
+    // Método para crear un nuevo producto
+    public function store(Request $request)
+    {
+        $producto = Producto::create($request->all());
+        return response()->json($producto, 201)
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    }
+
+    // Método para actualizar un producto existente
+    public function update(Request $request, $id)
+    {
+        $producto = Producto::findOrFail($id);
+        $producto->update($request->all());
+        return response()->json($producto, 200)
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    }
+
+    // Método para eliminar un producto
+    public function destroy($id)
+    {
+        $producto = Producto::findOrFail($id);
+        $producto->delete();
+        return response()->json(null, 204)
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    }
+
+    // En app/Http/Controllers/ProductoController.php
+
+    public function mostrarDetalles($id)
+    {
+        $producto = Producto::with('marca')->findOrFail($id);
+
+        return response()->json([
+            'producto' => $producto,
+        ])
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    }
     public function getAllProductos() {
         try {
             $productos = Producto::all();
@@ -29,7 +89,7 @@ class ProductoController extends Controller
             'nombre' => 'required|unique:producto',
             'precio_unit' => 'required',
             'cantidad_por_caja' => 'required',
-            'foto' => 'required',
+            'foto' => 'required|image|mimes:png,jpg',
             'punto_reorden' => 'required',
             'cantidad_cajas' => 'required',
         ]);
@@ -43,6 +103,25 @@ class ProductoController extends Controller
                 return response()->json(['error' => 'Ya existe un producto con el mismo nombre.'], 400);
             }
 
+            // Verificar si la imagen es válida
+            if (!$request->file('foto')->isValid()) {
+                return response()->json(['error' => 'Archivo de imagen no válido.'], 400);
+            }
+
+            // Verificar el tipo de archivo
+            $extension = $request->file('foto')->getClientOriginalExtension();
+            if ($extension != 'jpg' && $extension != 'png') {
+                return response()->json(['error' => 'Tipo de archivo no soportado. Solo se permiten archivos jpg y png.'], 400);
+            }
+
+            //crea una carpeta con el nombre marca_logo
+            if (!Storage::disk('public')->exists('producto_foto')){
+                Storage::disk('public')->makeDirectory('producto_foto');
+            }
+
+            // almacena el archivo en la carpeta 'producto_foto'
+            $result = $request->file('foto')->storeOnCloudinary('producto_foto');
+
             // Crear un nuevo producto
             $nuevoProducto = new Producto;
             $nuevoProducto->marca_id = $request->input('marca_id');
@@ -50,7 +129,7 @@ class ProductoController extends Controller
             $nuevoProducto->nombre = $nombre;
             $nuevoProducto->precio_unit = $request->input('precio_unit');
             $nuevoProducto->cantidad_por_caja = $request->input('cantidad_por_caja');
-            $nuevoProducto->foto = $request->input('foto');
+            $nuevoProducto->foto = $result->getSecurePath(); //obtiene la ruta en donde esta almacenado el archivo
             $nuevoProducto->punto_reorden = $request->input('punto_reorden');
             $nuevoProducto->cantidad_cajas = $request->input('cantidad_cajas');
             $nuevoProducto->save();
@@ -59,15 +138,24 @@ class ProductoController extends Controller
             return response()->json(['message' => 'Producto creado con éxito.'], 201);
         } catch (Exception $e) {
             // Manejar cualquier error y devolver una respuesta de error
-            return response()->json(['error' => 'Error al procesar la solicitud.'], 500);
+            return response()->json(['error' => 'Error al insertar el producto'], 500);
         }
     }
 
      //obtiene una producto en especifico
      public function getProducto($id_producto) {
         try {
-            $producto = Producto::findOrFail($id_producto);
-    
+            $producto = Producto::with(['marca', 'categoria'])
+            ->join('marca', 'producto.marca_id', '=', 'marca.id_marca')
+            ->join('categoria', 'producto.categoria_id', '=', 'categoria.id_categoria')
+            ->select(
+                'categoria.nombre as Categoria', // Trae el nombre de la categoría
+                'marca.nombre as Marca', // Trae el nombre de la marca
+                'producto.*' // Todas las columnas de la tabla 'producto'
+            )
+            ->where('producto.id_producto', $id_producto) // Aquí debes reemplazar $id_producto con el ID del producto que deseas obtener
+            ->first();
+
             return response()->json(["data" => $producto, "status" => 200]);
         } catch (Exception $e) {
             print($e);
@@ -78,14 +166,39 @@ class ProductoController extends Controller
     //actualiza la informacion de un producto en especifico
     public function updateProducto(Request $request, $id_producto) {
         $producto = Producto::find($id_producto);
-    
+
         if (!$producto) {
             return response()->json(["mensaje" => "El producto no existe", "status" => 400]);
         }
-    
+
+        //verifica si se ha subido un archivo
+        if ($request->hasFile('foto')){
+            // Verificar el tipo de archivo
+            $extension = $request->file('foto')->getClientOriginalExtension();
+            if ($extension != 'jpg' && $extension != 'png') {
+                return response()->json(['error' => 'Tipo de archivo no soportado. Solo se permiten archivos jpg y png.'], 400);
+            }
+        }
+
+        //verifica si el nombre de la marca ha sido cambiado
+        if ($request->input('nombre') != $producto->nombre){
+            //verifica que la nueva marca no este en la bd
+            if (Producto::where('nombre', $request->input('nombre'))->first()) {
+                return response()->json(['error' => 'Ya existe una marca con el mismo nombre.'], 400);
+            }
+        }
+
+        //obtiene el public_id de la url de la imagen
+        $key = explode('/', pathinfo(parse_url($producto->foto, PHP_URL_PATH), PATHINFO_DIRNAME));
+        $public_id = end($key) . '/' . pathinfo(parse_url($producto->foto, PHP_URL_PATH), PATHINFO_FILENAME);
+
+        Cloudinary::destroy($public_id);
+        $result = $request->file('foto')->storeOnCloudinary('producto_foto');
+
         $producto->fill($request->all());
+        $producto->foto = $result->getSecurePath();
         $producto->save();
-    
+
         return response()->json(["data" => $producto, "status" => 200]);
     }
 
@@ -97,12 +210,20 @@ class ProductoController extends Controller
             if (!$producto) {
                 return response()->json(['error' => 'Producto no encontrado'], 404);
             }
+
+            //obtiene el public_id de la url de la imagen
+            $key = explode('/', pathinfo(parse_url($producto->foto, PHP_URL_PATH), PATHINFO_DIRNAME));
+            $public_id = end($key) . '/' . pathinfo(parse_url($producto->foto, PHP_URL_PATH), PATHINFO_FILENAME);
+
+            //borra la imagen en donde esta almacenada
+            Cloudinary::destroy($public_id);
+
             $producto->delete();
 
-            return response()->json(['message' => 'Producto eliminado correctamente'], 404);
+            return response()->json(['message' => 'Producto eliminado correctamente'], 201);
         } catch (Exception $e) {
             print($e);
             return response()->json(['error' => 'Error al procesar la solicitud.'], 500);
         }
-    }    
+    }
 }

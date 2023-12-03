@@ -17,10 +17,8 @@ return new class extends Migration
 
             $table->timestamps();
 
-            // FKS
             $table->foreign('pedido_id')->references('id_pedido')->on('pedido');
             $table->foreign('forma_pago_id')->references('id_forma_pago')->on('forma_pago');
-
         });
     }
 

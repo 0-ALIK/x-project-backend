@@ -17,26 +17,71 @@ class Modulo1Seeder extends Seeder
      */
     public function run(): void
     {
-        #VALORES POR DEFECTO
-        Categoria::create([
-            'nombre'=> 'sodas'
-            ]);
+        $categorias = [
+            ['nombre' => 'Bebidas', 'created_at' => now(), 'updated_at' => now()],
+            ['nombre' => 'Medicamentos', 'created_at' => now(), 'updated_at' => now()],
+        ];
 
-        Marca::create([
-            'nombre'=>'femsa',
-            'descripcion'=>'esto es una marca de sodas',
-            'logo'=>'sin-logo',
-        ]);
+        Categoria::insert($categorias);
 
-        Producto::create([
-            'marca_id'=>1,
-            'categoria_id'=>1,
-            'nombre'=> 'Coca-2lt',
-            'precio_unit'=> 2.00,
-            'cantidad_por_caja'=>6,
-            'foto'=>'sin-foto',
-            'punto_reorden'=>100,
-            'cantidad_caja'=>100
-        ]);
+        $marcas = [
+            [
+                'nombre' => 'e-pura',
+                'descripcion' => 'Descripción de la Marca A',
+                'logo' => 'url/al/logo1.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nombre' => 'pfizer',
+                'descripcion' => 'Descripción de la Marca B',
+                'logo' => 'url/al/logo2.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ];
+
+        Marca::insert($marcas);
+
+        $productos = [
+            [
+                'marca_id' => 1, // ID de Samsung según el seeder de marcas
+                'categoria_id' => 1, // ID de Smartphones según el seeder de categorías
+                'cantidad_por_caja' => 10,
+                'cantidad_cajas' => 50,
+                'punto_reorden' => 20,
+                'precio_unit' => 0.75,
+                'nombre' => 'Botella de 1 litro',
+                'foto' => 'https://url-de-la-imagen.com/galaxy_s21.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'marca_id' => 1, // ID de Samsung según el seeder de marcas
+                'categoria_id' => 1, // ID de Smartphones según el seeder de categorías
+                'cantidad_por_caja' => 10,
+                'cantidad_cajas' => 50,
+                'punto_reorden' => 20,
+                'precio_unit' => 1.0,
+                'nombre' => 'Botella de 2 litros',
+                'foto' => 'https://url-de-la-imagen.com/galaxy_s21.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'marca_id' => 2, // ID de Nike según el seeder de marcas
+                'categoria_id' => 2, // ID de Calzado deportivo según el seeder de categorías
+                'cantidad_por_caja' => 20,
+                'cantidad_cajas' => 30,
+                'punto_reorden' => 15,
+                'precio_unit' => 2.5,
+                'nombre' => 'Vacuna del covid',
+                'foto' => 'https://url-de-la-imagen.com/air_max_270.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        ];
+
+        Producto::insert($productos);
     }
 }
