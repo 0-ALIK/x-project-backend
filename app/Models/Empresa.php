@@ -22,7 +22,7 @@ class Empresa extends Model
         'documento',
         'estado'
     ];
-    
+
     // Relacionamento 1:M empresa - cliente
     public function Cliente(){
         return $this->hasMany(Cliente::class, 'empresa_id', 'id_empresa');
@@ -30,9 +30,10 @@ class Empresa extends Model
     // Relacionamento 1:1 usuario - empresa
     public function Usuario(){
         return $this->belongsTo(usuario::class, 'usuario_id', 'id_usuario');
-    } 
+    }
     // Relacionamento 1:M empresa - direccion
     public function Direcciones(){
         return $this->hasMany(Empresa_direcciones::class, 'empresa_id', 'id_empresa');
     }
+
 }

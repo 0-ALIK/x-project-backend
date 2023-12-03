@@ -13,7 +13,7 @@ class Cliente_direcciones extends Model
     protected $table = 'cliente_direcciones';
 
     //declaramos el pk
-    protected $primaryKey = ['cliente_id', 'direccion_id'];
+    protected $primaryKey = 'cliente_id';
     public $incrementing = false;
 
     protected $fillable = [
