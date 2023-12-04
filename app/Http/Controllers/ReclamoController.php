@@ -58,7 +58,7 @@ class ReclamoController extends Controller
 
     public function getAllReclamos() {
         try {
-            $reclamos = Reclamo::with(['pedido','pedido.estado', 'cliente', 'categoria', 'prioridad', 'estado'])->get();
+            $reclamos = Reclamo::with(['pedido','pedido.estado', 'cliente.usuario', 'categoria', 'prioridad', 'estado'])->get();
 
             if ($reclamos->isEmpty()) {
                 return response()->json(["mensaje" => "No hay reclamos disponibles"], 404);
@@ -74,7 +74,7 @@ class ReclamoController extends Controller
     // Retorna los reclamos de un cliente en especifico
     public function getReclamosCliente($cliente_id) {
         try {
-            $reclamos = Reclamo::with(['pedido','pedido.estado', 'cliente', 'categoria', 'prioridad', 'estado'])->where('cliente_id', $cliente_id)->get();
+            $reclamos = Reclamo::with(['pedido','pedido.estado', 'cliente.usuario', 'categoria', 'prioridad', 'estado'])->where('cliente_id', $cliente_id)->get();
 
             if ($reclamos->isEmpty()) {
                 return response()->json(["mensaje" => "Cliente no tiene reclamos"], 404);
@@ -91,7 +91,7 @@ class ReclamoController extends Controller
     // Retorna un reclamo en especifico
     public function getReclamoById($reclamo_id) {
         try {
-            $reclamo = Reclamo::with(['pedido','pedido.estado','cliente', 'categoria', 'prioridad', 'estado'])->find($reclamo_id);
+            $reclamo = Reclamo::with(['pedido','pedido.estado','cliente.usuario', 'categoria', 'prioridad', 'estado'])->find($reclamo_id);
 
             if (!$reclamo) {
                 return response()->json(["mensaje" => "Reclamo no existe"], 404);
