@@ -18,7 +18,7 @@ class DashboardController extends Controller
         $precio_unit_max = $request->input('precio_unit_max');
         $punto_reorden = $request->input('punto_reorden');
 
-        $query = DB::table('producto')->select('producto.nombre as nombre','marca.nombre as marca','categoria.nombre as categoria', 'producto.precio_unit', DB::raw('(producto.cantidad_por_caja * producto. cantidad_cajas) as Stock'))
+        $query = DB::table('producto')->select('producto.nombre as Nombre','marca.nombre as Marca','categoria.nombre as Categoria', 'producto.precio_unit as Precio por Unidad', DB::raw('(producto.cantidad_por_caja * producto. cantidad_cajas) as Stock'))
         ->join('marca','marca.id_marca','=','producto.marca_id')
         ->join('categoria','categoria.id_categoria','=','producto.categoria_id');
 
@@ -92,12 +92,15 @@ class DashboardController extends Controller
         $estado = $request->input('estado');
 
         $query = DB::table('pedido')
-            ->select('cliente.apellido as nombre', 'pedido.detalles', 'provincia.nombre as provincia', 'producto.nombre as producto', 'pedido_productos.cantidad')
-            ->join('cliente', 'id_cliente', '=', 'pedido.cliente_id')
+            ->select(DB::raw('CONCAT(usuario.nombre, " " ,cliente.apellido) as Cliente'),'userEmpresa.nombre as Empresa','pedido.detalles as Detalle de Venta', 'provincia.nombre as Provincia', 'producto.nombre as Producto Comprado', 'pedido_productos.cantidad as Cantidad de Compra','producto.precio_unit as Precio Unitario del Producto' ,DB::raw('(pedido_productos.cantidad * producto.precio_unit) as Monto') )
+            ->join('cliente', 'cliente.id_cliente', '=', 'pedido.cliente_id')
+            ->join('usuario', 'usuario.id_usuario', '=', 'cliente.usuario_id')
+            ->join('empresa', 'empresa.id_empresa', '=', 'cliente.empresa_id')
+            ->join('usuario as userEmpresa','userEmpresa.id_usuario','=','empresa.usuario_id')
             ->join('pedido_estado', 'id_pedido_estado', '=', 'pedido.estado_id')   
-            ->join('direccion','id_direccion', '=', 'pedido.direccion_id')
+            ->join('direccion','direccion.id_direccion', '=', 'pedido.direccion_id')
             ->join('provincia','provincia.id_provincia','=','direccion.provincia_id')
-            ->join('pedido_productos','pedido_id','=','pedido.id_pedido')
+            ->join('pedido_productos','pedido_productos.pedido_id','=','pedido.id_pedido')
             ->join('producto','producto.id_producto','=','pedido_productos.producto_id');
 
         // Aplicamos los filtros
