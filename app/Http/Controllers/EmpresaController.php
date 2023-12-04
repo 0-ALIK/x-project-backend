@@ -71,6 +71,7 @@ class EmpresaController extends Controller
             'correo' => ['required', 'email'],
             'pass' => 'required',
             'documento' => 'required|mimes:pdf|max:10000',
+            
         ]);
 
         //crea una carpeta con el nombre documento_empresa si no existe
@@ -89,7 +90,7 @@ class EmpresaController extends Controller
             'telefono' => $camposValidados['telefono'],
             'correo' => $camposValidados['correo'],
             'pass' => $camposValidados['pass'],
-            'foto' => '-',
+            'foto' => 'https://cdn-icons-png.flaticon.com/512/4812/4812244.png',
             'detalles' => 'prueba',
             'rol' => 'empresa',
         ]);
@@ -128,7 +129,8 @@ class EmpresaController extends Controller
             'ruc' => 'required',
             'telefono' => 'required',
             'correo' => ['required', 'email'],
-            'foto' => 'image|mimes:jpeg,png,jpg,svg|max:2048'
+            'foto' => 'image|mimes:jpeg,png,jpg,svg|max:2048',
+            'razon_social' => 'required',
         ]);
 
         $empresa = Empresa::find($id);
@@ -142,22 +144,24 @@ class EmpresaController extends Controller
             $public_id = end($key) . '/' . pathinfo(parse_url($usuario->foto, PHP_URL_PATH), PATHINFO_FILENAME);
             //borra la imagen en donde esta almacenada
             Cloudinary::destroy($public_id);
+            $result = $camposValidados['foto']->storeOnCloudinary('foto_empresa');    
+            $usuario->foto = $result->getSecurePath(); //aqui va el url de la foto
             } 
          //crea una carpeta con el nombre foto_empresa si no existe
         if (!Storage::disk('public')->exists('foto_empresa')){
             Storage::disk('public')->makeDirectory('foto_empresa');
         }
-        $result = $camposValidados['foto']->storeOnCloudinary('foto_empresa');    
+        
 
         db::beginTransaction();
         //actualizamos los datos del usuario de la empresa
         $usuario->nombre = $camposValidados['nombre'];
         $usuario->telefono = $camposValidados['telefono'];
         $usuario->correo = $camposValidados['correo'];
-        $usuario->foto = $result->getSecurePath();; //aqui va el url de la foto
+        
         $usuario->save();   
         //actualizamos los datos de la empresa
-        $empresa->razon_social = $camposValidados['nombre'];
+        $empresa->razon_social = $camposValidados['razon_social'];
         $empresa->ruc = $camposValidados['ruc'];
         $empresa->save();
         db::commit();
