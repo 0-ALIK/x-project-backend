@@ -212,6 +212,15 @@ class DashboardController extends Controller
 
         return $categorias;
     }
+
+    public function getPago(){
+        $query = DB::table('pago') 
+        ->select('*') ;    
+
+        $categorias = $query->get();
+
+        return $categorias;
+    }
     
 }
 

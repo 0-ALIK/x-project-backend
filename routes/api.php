@@ -46,6 +46,8 @@ Route::get('/api/analitica/estado/',[Dashboard::class, 'getEstados']);
 Route::get('/api/analitica/estadoTickets/',[Dashboard::class, 'getEstadosTickets']);
 Route::get('/api/analitica/categoriaTickets/',[Dashboard::class, 'getCategoriasTickets']);
 Route::get('/api/analitica/prioridadTickets/',[Dashboard::class, 'getPrioridadTickets']);
+Route::get('/api/analitica/pago/',[Dashboard::class, 'getPago']);
+
 
 // Rutas de ventas para el administrador
 Route::group(['prefix' => '/api/admin'], function () {
