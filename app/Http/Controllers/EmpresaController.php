@@ -116,7 +116,7 @@ class EmpresaController extends Controller
         } catch(Exception $ex){
             error_log($ex);
             DB::rollBack();
-            return response()->json( ["mensaje" => "Ocurrió un error", "status" => 500],500 );
+            return response()->json( ["mensaje" => "Ocurrió un error"+$ex, "status" => 500],500 );
         }
     }
 

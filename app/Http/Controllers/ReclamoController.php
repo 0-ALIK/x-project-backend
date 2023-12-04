@@ -7,15 +7,31 @@ use App\Models\Reclamo;
 use App\Models\RCategoria;
 use App\Models\Estado;
 use App\Models\Prioridad;
+use Illuminate\Support\Facades\Storage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 use Exception;
 use Illuminate\Http\Request;
+
+use function PHPUnit\Framework\isEmpty;
 
 class ReclamoController extends Controller
 {
     public function guardarReclamo(Request $request) {
         $id_usuario = $request->user()->currentAccessToken()->tokenable_id;
         $cliente = Cliente::where('usuario_id', $id_usuario)->first();
+
+        if (!Storage::disk('public')->exists('documento_reclamo')){
+            Storage::disk('public')->makeDirectory('documento_reclamo');
+        }
+
+        if (isset($request['evidencia'])) {
+            $evidencia = $request['evidencia']->storeOnCloudinary('documento_empresa');
+            $evidenciaFile = $evidencia->getSecurePath();
+        } else {
+            $evidenciaFile = '-';
+        }
+
 
         $existeReclamo = Reclamo::where('pedido_id', $request['pedido_id'])->first();
         if ( !isset($existeReclamo) ) {
@@ -41,7 +57,7 @@ class ReclamoController extends Controller
                         'pedido_id'     => $request['pedido_id'],
                         'categoria_id'  => $request['categoria'],
                         'descripcion'   => $request['descripcion'],
-                        'evidencia'     => $request['evidencia'],
+                        'evidencia'     => $evidenciaFile,
                         'prioridad_id'  => $prio,
                         'estado_id'     => 1
                     ]

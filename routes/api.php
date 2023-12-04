@@ -220,7 +220,7 @@ Route::get('/api/sugerencia',    [Sugerencia::class, 'getSugerencia']);
 ########        RUTAS DE CHAT    ##########
 ###########################################
 
-Route::get('/api/chat', [Chat::class, 'chats']);
+Route::get('/api/chat', [Chat::class, 'chats'])->middleware(['auth:sanctum']);
 Route::get('/api/chat/{reclamo_id}', [Chat::class, 'index']);
 Route::post('/api/chat/receive',     [Chat::class, 'receive']);
-Route::post('/api/chat/broadcast',   [Chat::class, 'broadcast']);
+Route::post('/api/chat/broadcast',   [Chat::class, 'broadcast'])->middleware(['auth:sanctum']);
