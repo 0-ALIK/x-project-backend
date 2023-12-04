@@ -13,6 +13,8 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Exception;
 use Illuminate\Http\Request;
 
+use function PHPUnit\Framework\isEmpty;
+
 class ReclamoController extends Controller
 {
     public function guardarReclamo(Request $request) {
@@ -23,7 +25,13 @@ class ReclamoController extends Controller
             Storage::disk('public')->makeDirectory('documento_reclamo');
         }
 
-        $evidencia = $request['evidencia']->storeOnCloudinary('documento_empresa');
+        if (isset($request['evidencia'])) {
+            $evidencia = $request['evidencia']->storeOnCloudinary('documento_empresa');
+            $evidenciaFile = $evidencia->getSecurePath();
+        } else {
+            $evidenciaFile = '-';
+        }
+
 
         $existeReclamo = Reclamo::where('pedido_id', $request['pedido_id'])->first();
         if ( !isset($existeReclamo) ) {
@@ -49,7 +57,7 @@ class ReclamoController extends Controller
                         'pedido_id'     => $request['pedido_id'],
                         'categoria_id'  => $request['categoria'],
                         'descripcion'   => $request['descripcion'],
-                        'evidencia'     => $evidencia->getSecurePath(),
+                        'evidencia'     => $evidenciaFile,
                         'prioridad_id'  => $prio,
                         'estado_id'     => 1
                     ]
