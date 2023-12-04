@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Categoria;
+use App\Models\RCategoria;
 use App\Models\Prioridad;
 use App\Models\Reclamo;
 use App\Models\Estado;
@@ -22,16 +22,16 @@ class Modulo4Seeder extends Seeder
         # ESTADOS POR DEFECTO
         $dataEstados = array('espera', 'revisado', 'resuelto');
         # CATEGORÍAS POR DEFECTO
-        $dataCategorias = array('retraso', 'equivocado', 'dañado', 'devolución', 'otro');
-        
-        foreach($dataPrioridades as $data) {
+        $dataCategorias = array('retraso', 'equivocado', 'dañado', 'devolución');
+
+/*         foreach($dataPrioridades as $data) {
             Prioridad::create(
                 ['prioridad' => $data]
             );
         }
-
+ */
         foreach($dataCategorias as $data) {
-            Categoria::create(
+            RCategoria::create(
                 ['categoria' => $data]
             );
         }

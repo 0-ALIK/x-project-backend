@@ -19,6 +19,10 @@ use App\Http\Controllers\SucursalController as Sucursal;
 use App\Http\Controllers\UsuarioController as Usuario;
 use App\Http\Controllers\AdminController as Admin;
 use App\Http\Controllers\ProvinciaController;
+use App\Http\Controllers\ReclamoController as Reclamo;
+use App\Http\Controllers\SugerenciaController as Sugerencia;
+use App\Http\Controllers\ChatController as Chat;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +39,7 @@ use App\Http\Controllers\ProvinciaController;
 Route::group(['prefix' => '/api/admin'], function () {
     // Rutas para listar pedidos y cambiar el estado de un pedido
     Route::get('/pedidos', [AdminVentasController::class, 'listarPedidos']);
+    Route::get('/pedidos/estados', [AdminVentasController::class, 'listarEstados']);
     Route::put('/pedidos/{pedidoId}/cambiar-estado', [AdminVentasController::class, 'cambiarEstadoPedido']);
     Route::get('/pedidos/{pedidoId}', [AdminVentasController::class, 'obtenerPedidoConPago']);
     Route::delete('/pedidos/{pedidoId}', [AdminVentasController::class, 'borrarPedido']);
@@ -76,43 +81,43 @@ Route::post('/productos', [ProductoController::class, 'store']);
 ###########################################
 ########    RUTAS DE USUARIOS   ###########
 ###########################################
+
 Route::post('/api/login', [Usuario::class, 'login']);
-
 Route::post('/api/logout', [Usuario::class, 'logout'])->middleware(['auth:sanctum']);
+
 ###########################################
-########    RUTAS DE ADMIN   ###########
+########    RUTAS DE ADMIN      ###########
 ###########################################
+
 Route::post('api/admin', [Admin::class, 'crearAdmin']);
-
 Route::put('api/admin/{id}', [Admin::class, 'actualizarAdmin']);
-
 Route::delete('api/admin/{id}', [Admin::class, 'borrarAdmin'])->middleware(['auth:sanctum', 'ability:admin']);
+
 ###########################################
 ########    RUTAS DE EMPRESAS   ###########
 ###########################################
+
 Route::get('/api/empresas',  [Empresa::class, 'getAllEmpresas'])->middleware(['auth:sanctum', 'ability:admin,admin_clientes']);
-
 Route::get('/api/empresas/{id}',  [Empresa::class, 'getEmpresa']);
-
 Route::post('/api/empresas',  [Empresa::class, 'guardarEmpresa']);
-
 Route::put('/api/empresas/{id}',  [Empresa::class, 'actualizarEmpresa'])->middleware(['auth:sanctum', 'ability:empresa,admin,admin_clientes']);
-
 Route::delete('/api/empresas/{id}',  [Empresa::class, 'eliminarEmpresa'])->middleware(['auth:sanctum', 'ability:empresa,admin,admin_clientes']);
+
 ###########################################
-########    RUTAS DE SUCURSALES   ###########
+########    RUTAS DE SUCURSALES   #########
 ###########################################
+
 Route::get('/api/sucursales/{id}', [Sucursal::class, 'getSucursales']);
 Route::post('/api/sucursales/{id}', [Sucursal::class, 'guardarSucursal'])->middleware(['auth:sanctum', 'ability:empresa,admin,admin_clientes']);
 Route::put('/api/sucursales/{empresa_id}/{direccion_id}', [Sucursal::class, 'actualizarSucursal'])->middleware(['auth:sanctum', 'ability:empresa,admin,admin_clientes']);
 Route::delete('/api/sucursales/{empresa_id}/{direccion_id}', [Sucursal::class, 'eliminarSucursal'])->middleware(['auth:sanctum', 'ability:empresa,admin,admin_clientes']);
+
 ###########################################
 ########    RUTAS DE SOLICITUDES   ########
 ###########################################
+
 Route::get('/api/solicitudes',  [Solicitudes::class, 'getAllSolicitudes'])->middleware(['auth:sanctum', 'ability:admin,admin_clientes']);
-
 Route::put('/api/solicitudes/{id}',  [Solicitudes::class, 'actualizarSolicitud'])->middleware(['auth:sanctum', 'ability:admin,admin_clientes']);
-
 //se rechaza la empresa y se elimina xd
 Route::delete('/api/solicitudes/{id}',  [Solicitudes::class, 'rechazarSolicitud'])->middleware(['auth:sanctum', 'ability:admin,admin_clientes']);
 
@@ -121,13 +126,9 @@ Route::delete('/api/solicitudes/{id}',  [Solicitudes::class, 'rechazarSolicitud'
 ###########################################
 
 Route::get('/api/clientes',  [Cliente::class, 'getAllClientes'])->middleware(['auth:sanctum', 'ability:empresa,admin,admin_clientes']);
-
 Route::get('/api/clientes/{id}',  [Cliente::class, 'getCliente']);
-
 Route::post('/api/clientes',  [Cliente::class, 'guardarCliente'])->middleware(['auth:sanctum', 'ability:empresa']);
-
 Route::put('/api/clientes/{id}',  [Cliente::class, 'actualizarCliente'])->middleware(['auth:sanctum', 'ability:admin,cliente,empresa,admin_clientes']);
-
 Route::delete('/api/clientes/{id}',  [Cliente::class, 'eliminarCliente'])->middleware(['auth:sanctum', 'ability:cliente,empresa,admin_clientes,admin']);
 
 ###########################################
@@ -135,11 +136,8 @@ Route::delete('/api/clientes/{id}',  [Cliente::class, 'eliminarCliente'])->middl
 ###########################################
 
 Route::get('/api/clientes/{id}/direcciones',  [DireccionCliente::class, 'getClienteDirecciones']);
-
 Route::post('/api/clientes/{id}/direcciones',  [DireccionCliente::class, 'guardarClienteDireccion'])->middleware(['auth:sanctum', 'ability:cliente,admin_clientes,admin']);
-
 Route::put('/api/clientes/{id}/direcciones/{id_direccion}',  [DireccionCliente::class, 'actualizarClienteDireccion'])->middleware(['auth:sanctum', 'ability:cliente,admin_clientes,admin']);
-
 Route::delete('/api/clientes/{id}/direcciones/{id_direccion}',  [DireccionCliente::class, 'eliminarClienteDireccion'])->middleware(['auth:sanctum', 'ability:cliente,admin_clientes,admin']);
 
 Route::get('/api/provincias', [ProvinciaController::class, 'getAllProvincias']);
@@ -179,3 +177,34 @@ Route::group(['prefix' => '/api/payment'], function () {
     Route::post('/process-payment/process-payment', [PagoController::class, 'processPayment'])->name('process.payment');
     // Otras rutas relacionadas con el método de pago
 });
+###########################################
+########    RUTAS DE RECLAMOS      ########
+###########################################
+
+Route::post('/api/reclamo', [Reclamo::class, 'guardarReclamo'])
+    ->middleware(['auth:sanctum', 'ability:cliente,admin_clientes,admin']);
+
+Route::get('/api/reclamo',  [Reclamo::class, 'getAllReclamos']);
+Route::get('/api/reclamo/estados',      [Reclamo::class, 'getAllEstados']);
+Route::get('/api/reclamo/categorias',   [Reclamo::class, 'getAllCategorias']);
+Route::get('/api/reclamo/prioridades',  [Reclamo::class, 'getAllPrioridades']);
+Route::get('/api/reclamo/{reclamo_id}',         [Reclamo::class, 'getReclamoById']);
+Route::get('/api/reclamo/cliente/{cliente_id}', [Reclamo::class, 'getReclamosCliente']);
+Route::patch('/api/reclamo/{reclamo_id}/prioridad', [Reclamo::class, 'updatePrioridad']);
+Route::patch('/api/reclamo/{reclamo_id}/estado',    [Reclamo::class, 'updateEstado']);
+
+###########################################
+########    RUTAS DE SUGERENCIAS    #######
+###########################################
+
+Route::post('/api/sugerencia',   [Sugerencia::class, 'guardarSugerencia']);
+Route::get('/api/sugerencia',    [Sugerencia::class, 'getSugerencia']);
+
+###########################################
+########        RUTAS DE CHAT    ##########
+###########################################
+
+Route::get('/api/chat', [Chat::class, 'chats']);
+Route::get('/api/chat/{reclamo_id}', [Chat::class, 'index']);
+Route::post('/api/chat/receive',     [Chat::class, 'receive']);
+Route::post('/api/chat/broadcast',   [Chat::class, 'broadcast']);

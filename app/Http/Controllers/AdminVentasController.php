@@ -157,4 +157,8 @@ class AdminVentasController extends Controller{
 
         return response()->json(['message' => 'Pedido eliminado con éxito']);
     }
+
+    public function listarEstados() {
+        return PedidoEstado::all();
+    }
 }
