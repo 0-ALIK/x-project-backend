@@ -16,7 +16,7 @@ use App\Http\Controllers\SolicitudesController as Solicitudes;
 use App\Http\Controllers\ClienteController as Cliente;
 use App\Http\Controllers\DireccionClienteController as DireccionCliente;
 use App\Http\Controllers\SucursalController as Sucursal;
-use App\Http\Controllers\UsuarioController as Usuario;
+use App\Http\Controllers\DashboardController as Dashboard;use App\Http\Controllers\UsuarioController as Usuario;
 use App\Http\Controllers\AdminController as Admin;
 use App\Http\Controllers\ProvinciaController;
 use App\Http\Controllers\ReclamoController as Reclamo;
@@ -34,6 +34,22 @@ use App\Http\Controllers\ChatController as Chat;
 | will be assigned to the "api" middleware group. Make something great!
 |
 */
+###########################################
+########    RUTAS DE DASHBOARDS   ###########
+###########################################
+Route::get('/api/analitica/reporte/cliente/',  [Dashboard::class, 'getAllClientes']);
+Route::get('/api/analitica/reporte/inventario/',[Dashboard::class, 'getAllProductos']);
+Route::get('/api/analitica/reporte/pedido/',[Dashboard::class, 'getAllPedidos']);
+Route::get('/api/analitica/reporte/empresa/',[Dashboard::class, 'getAllEmpresas']);
+Route::get('/api/analitica/reporte/reclamo/',[Dashboard::class, 'getAllTickets']);
+Route::get('/api/analitica/categoria/',[Dashboard::class, 'getCategorias']);
+Route::get('/api/analitica/marca/',[Dashboard::class, 'getMarcas']);
+Route::get('/api/analitica/provincias/',[Dashboard::class, 'getProvincias']);
+Route::get('/api/analitica/producto/',[Dashboard::class, 'getProductos']);
+Route::get('/api/analitica/estado/',[Dashboard::class, 'getEstados']);
+Route::get('/api/analitica/estadoTickets/',[Dashboard::class, 'getEstadosTickets']);
+Route::get('/api/analitica/categoriaTickets/',[Dashboard::class, 'getCategoriasTickets']);
+Route::get('/api/analitica/prioridadTickets/',[Dashboard::class, 'getPrioridadTickets']);
 
 // Rutas de ventas para el administrador
 Route::group(['prefix' => '/api/admin'], function () {
